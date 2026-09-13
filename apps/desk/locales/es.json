@@ -1,0 +1,8 @@
+{
+  "noEngines.title": "Instala un motor para que tus Folks puedan correr",
+  "noEngines.intro": "OpenFolks no incluye un modelo propio: tus Folks funcionan con una CLI de IA instalada en este equipo, usando tu sesión existente. Configura cualquiera de ellas y tu Desk cobra vida.",
+  "engines.cloud": "Nube",
+  "engines.local": "Local",
+  "common.checkAgain": "Comprobar de nuevo",
+  "common.checking": "Comprobando…"
+}

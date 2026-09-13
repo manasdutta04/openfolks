@@ -1,0 +1,8 @@
+{
+  "noEngines.title": "Install an engine so your Folks can run",
+  "noEngines.intro": "OpenFolks doesn't ship a model of its own — your Folks run on an AI CLI installed on this computer, using your existing login. Set up any one of these and your Desk comes alive.",
+  "engines.cloud": "Cloud",
+  "engines.local": "Local",
+  "common.checkAgain": "Check again",
+  "common.checking": "Checking…"
+}
