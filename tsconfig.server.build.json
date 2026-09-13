@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.server.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "apps/harness",
+    "outDir": "dist-server",
+    "rewriteRelativeImportExtensions": true,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "exclude": [
+    "apps/harness/**/*.test.ts",
+    "apps/harness/testing",
+    "apps/harness/drivers/pi-mcp-extension.ts"
+  ],
+  "include": [
+    "apps/harness"
+  ]
+}
