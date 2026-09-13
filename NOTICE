@@ -1,0 +1,9 @@
+OpenFolks
+Copyright (c) 2026 OpenFolks contributors
+
+This product is licensed under the MIT License.
+The full text is in LICENSE.
+
+Third-party components ship under their own terms. See third_party/
+and the notices bundled with skills. The pinned cloudflared binary
+remains Apache License 2.0 (third_party/cloudflared/LICENSE).
