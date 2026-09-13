@@ -1,0 +1,28 @@
+node_modules
+.worktrees/
+dist
+dist-electron
+dist-native
+dist-server
+*.local
+.DS_Store
+*.tsbuildinfo
+__pycache__/
+apps/shell/resources/speech-helper
+apps/shell/resources/OpenFolks Speech.app
+apps/shell/resources/OpenFolks Recorder.app
+release
+.omb-scratch
+.wrangler/
+.dev.vars
+.dev.vars.*
+!cloudflare/control-plane/.dev.vars.example
+cloudflare/composio-broker/worker-configuration.d.ts
+cloudflare/control-plane/worker-configuration.d.ts
+.claude/worktrees/
+.vercel/
+.pi/
+packages/folks-kit/template/portals/*/cli/node_modules/
+.playwright-cli/
+
+.env
