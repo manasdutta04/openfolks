@@ -1,0 +1,23 @@
+{
+  "ignorePatterns": [
+    ".agent/**",
+    ".agents/**",
+    ".claude/**",
+    ".codex/**",
+    ".continue/**",
+    ".cursor/**",
+    ".gemini/**",
+    ".opencode/**",
+    ".pi/**",
+    ".roo/**",
+    ".windsurf/**",
+    "dist/**",
+    "dist-electron/**",
+    "dist-native/**",
+    "dist-server/**",
+    "apps/shell/vendor/**",
+    "release/**",
+    "third_party/**",
+    "apps/shell/resources/**"
+  ]
+}
