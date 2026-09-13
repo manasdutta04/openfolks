@@ -1,0 +1,787 @@
+import { describe, expect, it, vi } from "vitest";
+
+import {
+  configStatusFromFrame,
+  initialState,
+  loadSnapshotBoundary,
+  openNotificationTarget,
+  reducer,
+  visibleNotificationThread,
+  type Bot,
+  type Group,
+  type Message,
+} from "./store";
+import { openLiveEvents, type LiveEventSourceLike, type LiveEventsPlatform } from "../lib/live-events";
+
+type SnapshotFrame =
+  | { kind: "hello"; resumed: boolean; cursor: string }
+  | { kind: "message"; threadId: string; message: { id: string } };
+
+class SnapshotEventSource implements LiveEventSourceLike {
+  onopen: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  onmessage: ((event: { data: string; lastEventId?: string }) => void) | null = null;
+  close = vi.fn();
+
+  constructor(readonly url: string) {}
+
+  message(frame: SnapshotFrame, lastEventId = "") {
+    this.onmessage?.({ data: JSON.stringify(frame), lastEventId });
+  }
+}
+
+describe("replacement snapshot boundary", () => {
+  it("flushes folk frames without reconnecting when a peripheral snapshot fails", async () => {
+    const sources: SnapshotEventSource[] = [];
+    const applied: unknown[] = [];
+    const pending: unknown[] = [];
+    const scheduleRetry = vi.fn();
+    let hydrated = false;
+    const platform: LiveEventsPlatform = {
+      createEventSource: (url) => {
+        const source = new SnapshotEventSource(url);
+        sources.push(source);
+        return source;
+      },
+      isOnline: () => true,
+      isVisible: () => true,
+      now: Date.now,
+    };
+    const stop = openLiveEvents(
+      {
+        onSnapshotRequired: async () => {
+          const chatReady = await loadSnapshotBoundary(
+            async () => {},
+            [{ key: "webhooks", load: async () => Promise.reject(new Error("webhooks unavailable")) }],
+            (part, error) => scheduleRetry(part.key, error),
+          );
+          if (chatReady) {
+            hydrated = true;
+            applied.push(...pending.splice(0));
+          }
+          return chatReady;
+        },
+        onFrame: (frame) => {
+          if (hydrated) applied.push(frame);
+          else pending.push(frame);
+        },
+        retryMinMs: 1,
+        retryMaxMs: 1,
+      },
+      platform,
+    );
+
+    sources[0]!.message({ kind: "hello", resumed: false, cursor: "stream00:4" });
+    sources[0]!.message(
+      { kind: "message", threadId: "folk-thread", message: { id: "user-1" } },
+      "stream00:5",
+    );
+    await vi.waitFor(() => expect(applied).toHaveLength(1));
+
+    expect(applied).toEqual([
+      { kind: "message", threadId: "folk-thread", message: { id: "user-1" } },
+    ]);
+    expect(scheduleRetry).toHaveBeenCalledWith("webhooks", expect.any(Error));
+    expect(sources).toHaveLength(1);
+    expect(sources[0]!.close).not.toHaveBeenCalled();
+    stop();
+  });
+});
+
+describe("notification routing", () => {
+  const bots = [{ id: "folk-1", threadId: "main-thread", tasks: [{ threadId: "detached-thread" }] }];
+  const groups = [{
+    id: "room-1",
+    threadId: "room-thread",
+    tasks: [
+      { threadId: "room-thread", title: "Current", createdAt: 1 },
+      { threadId: "older-room-thread", title: "Older", createdAt: 0 },
+    ],
+  }];
+
+  it("selects the folk and switches to the notification's exact task", () => {
+    const dispatch = vi.fn();
+
+    openNotificationTarget(dispatch, { botId: "folk-1", threadId: "detached-thread" }, { bots, groups });
+
+    expect(dispatch.mock.calls.map(([action]) => action)).toEqual([
+      { type: "select", id: "folk-1" },
+      { type: "switchTask", botId: "folk-1", threadId: "detached-thread" },
+    ]);
+  });
+
+  it("opens the room when the thread is a group's — never a folk task switch that would 404", () => {
+    // room approval/question notifications carry the asker bot with the
+    // GROUP's thread id; the exact destination is the room itself
+    const dispatch = vi.fn();
+
+    openNotificationTarget(dispatch, { botId: "folk-1", threadId: "room-thread" }, { bots, groups });
+
+    expect(dispatch.mock.calls.map(([action]) => action)).toEqual([{ type: "select", id: "room-1" }]);
+  });
+
+  it("opens the room and restores the exact inactive channel task", () => {
+    const dispatch = vi.fn();
+
+    openNotificationTarget(dispatch, { botId: "folk-1", threadId: "older-room-thread" }, { bots, groups });
+
+    expect(dispatch.mock.calls.map(([action]) => action)).toEqual([
+      { type: "select", id: "room-1" },
+      { type: "switchGroupTask", groupId: "room-1", threadId: "older-room-thread" },
+    ]);
+  });
+
+  it("lands on a plain folk select for a thread it cannot place, not an error", () => {
+    const dispatch = vi.fn();
+
+    openNotificationTarget(dispatch, { botId: "folk-1", threadId: "deleted-task-thread" }, { bots, groups });
+
+    expect(dispatch.mock.calls.map(([action]) => action)).toEqual([{ type: "select", id: "folk-1" }]);
+  });
+
+  it("identifies only the exact chat thread currently on screen", () => {
+    expect(visibleNotificationThread({
+      activeView: "chat",
+      selectedId: "folk-1",
+      bots,
+      groups,
+    })).toBe("main-thread");
+    expect(visibleNotificationThread({
+      activeView: "chat",
+      selectedId: "room-1",
+      bots,
+      groups,
+    })).toBe("room-thread");
+    expect(visibleNotificationThread({
+      activeView: "desk",
+      selectedId: "folk-1",
+      bots,
+      groups,
+    })).toBeNull();
+  });
+});
+
+describe("config status frames", () => {
+  it("keeps the room turn timeout with the existing config fields", () => {
+    expect(
+      configStatusFromFrame({
+        xai: { configured: true },
+        composio: { configured: true, mode: "managed" },
+        box: { configured: false },
+        vps: { configured: true, sshAlias: "homelab" },
+        rooms: { turnTimeoutMinutes: 20 },
+        localVm: { mode: "per-bot", maxInstances: 3 },
+        opencodeGo: { configured: true },
+        tts: { configured: true, ready: true, voice: "Ada" },
+        profile: { name: "Ian", email: "ian@example.test" },
+        features: { skillRecorder: true },
+      }),
+    ).toEqual({
+      xai: { configured: true },
+      composio: { configured: true, mode: "managed" },
+      box: { configured: false },
+      vps: { configured: true, sshAlias: "homelab" },
+      rooms: { turnTimeoutMinutes: 20 },
+      localVm: { mode: "per-bot", maxInstances: 3 },
+      opencodeGo: { configured: true },
+      tts: { configured: true, ready: true, voice: "Ada" },
+      profile: { name: "Ian", email: "ian@example.test" },
+      features: { skillRecorder: true },
+    });
+  });
+});
+
+describe("task rename", () => {
+  it("updates the task title in local state immediately", () => {
+    const bot = {
+      id: "echo",
+      threadId: "t1",
+      name: "Echo",
+      title: "",
+      description: "",
+      notifications: true,
+      color: "green",
+      unread: false,
+      modelSelection: { instanceId: "x", model: "y" },
+      messages: [],
+      tasks: [
+        { threadId: "t1", title: "New task", createdAt: 1 },
+        { threadId: "t2", title: "Other", createdAt: 2 },
+      ],
+    } satisfies Bot;
+    const next = reducer(
+      { ...initialState, bots: [bot] },
+      { type: "renameTask", botId: bot.id, threadId: "t1", title: "Renamed" },
+    );
+    expect(next.bots[0]?.tasks?.find((task) => task.threadId === "t1")?.title).toBe("Renamed");
+    expect(next.bots[0]?.tasks?.find((task) => task.threadId === "t2")?.title).toBe("Other");
+  });
+
+  it("updates a channel task title in local state immediately", () => {
+    const group = {
+      id: "room",
+      threadId: "room-task-1",
+      name: "Launch",
+      memberIds: [],
+      defaultResponder: { kind: "everyone" },
+      bulletin: "",
+      unread: false,
+      createdAt: 1,
+      messages: [],
+      tasks: [
+        { threadId: "room-task-1", title: "New task", createdAt: 1 },
+        { threadId: "room-task-2", title: "Other", createdAt: 2 },
+      ],
+    } satisfies Group;
+    const next = reducer(
+      { ...initialState, groups: [group] },
+      { type: "renameGroupTask", groupId: group.id, threadId: "room-task-1", title: "Renamed" },
+    );
+    expect(next.groups[0]?.tasks?.find((task) => task.threadId === "room-task-1")?.title).toBe("Renamed");
+    expect(next.groups[0]?.tasks?.find((task) => task.threadId === "room-task-2")?.title).toBe("Other");
+  });
+});
+
+describe("Teach a skill feature flag", () => {
+  const config = configStatusFromFrame({
+    composio: { configured: false },
+    box: { configured: false },
+    vps: { configured: false, sshAlias: "" },
+    rooms: { turnTimeoutMinutes: 5 },
+    localVm: { mode: "shared", maxInstances: 2 },
+    features: { skillRecorder: true },
+  });
+
+  it("does not open the recorder while the experiment is disabled", () => {
+    expect(reducer(initialState, { type: "showSkillRecorder" }).activeView).toBe("chat");
+  });
+
+  it("opens after opt-in and returns to chat when disabled", () => {
+    const enabled = reducer({ ...initialState, config }, { type: "showSkillRecorder" });
+    expect(enabled.activeView).toBe("skill-recorder");
+
+    const disabled = reducer(enabled, {
+      type: "configStatus",
+      config: { ...config, features: { skillRecorder: false } },
+    });
+    expect(disabled.activeView).toBe("chat");
+  });
+});
+
+describe("onboarding quiz", () => {
+  const quizCard = {
+    title: "What do you mostly want help with?",
+    subtitle: "Pick whatever's closest; we can always expand from there.",
+    options: ["Work & projects"],
+  };
+  const bot = {
+    id: "echo",
+    threadId: "t1",
+    name: "Echo",
+    title: "",
+    description: "",
+    notifications: true,
+    color: "green",
+    unread: false,
+    modelSelection: { instanceId: "x", model: "y" },
+    messages: [
+      { id: "g", role: "bot", kind: "text", text: "Hey", at: 1 },
+      { id: "q", role: "bot", kind: "options", card: quizCard, at: 2 },
+    ],
+    activeLeafId: "q",
+  } satisfies Bot;
+
+  it("hides the quiz as soon as the person sends a message", () => {
+    const state = { ...initialState, bots: [bot], selectedId: bot.id };
+    const next = reducer(state, { type: "send", botId: bot.id, text: "Hi bro" });
+    expect(next.bots[0]?.messages.find((message) => message.id === "q")?.card?.dismissed).toBe(true);
+  });
+
+  it("hides the quiz when they pick an option", () => {
+    const state = { ...initialState, bots: [bot], selectedId: bot.id };
+    const next = reducer(state, { type: "answerCard", botId: bot.id, messageId: "q", answer: "Work & projects" });
+    expect(next.bots[0]?.messages.find((message) => message.id === "q")?.card).toMatchObject({
+      answered: "Work & projects",
+      dismissed: true,
+    });
+  });
+
+  it("leaves a live permission card in place", () => {
+    const askBot: Bot = {
+      ...bot,
+      messages: [
+        ...bot.messages,
+        {
+          id: "ask",
+          role: "bot",
+          kind: "options",
+          card: {
+            title: "Approval needed",
+            subtitle: "rm",
+            options: ["Allow", "Deny"],
+            requestId: "r1",
+            tool: "Bash",
+          },
+          at: 3,
+        },
+      ],
+      activeLeafId: "ask",
+    };
+    const state = { ...initialState, bots: [askBot], selectedId: askBot.id };
+    const next = reducer(state, { type: "send", botId: askBot.id, text: "ok" });
+    expect(next.bots[0]?.messages.find((message) => message.id === "ask")?.card?.dismissed).toBeUndefined();
+    expect(next.bots[0]?.messages.find((message) => message.id === "q")?.card?.dismissed).toBe(true);
+  });
+});
+
+describe("cross-client folk creation", () => {
+  it("adds an announced folk before its greeting frames arrive", () => {
+    const announced = {
+      id: "phone-folk",
+      threadId: "phone-thread",
+      name: "Scout",
+      title: "",
+      description: "",
+      notifications: true,
+      color: "green",
+      unread: false,
+      modelSelection: { instanceId: "codex", model: "default" },
+    } satisfies Omit<Bot, "messages">;
+
+    const added = reducer(initialState, { type: "botPatched", bot: announced });
+
+    expect(added.bots).toEqual([{ ...announced, messages: [] }]);
+
+    const greeting = {
+      id: "greeting",
+      role: "bot",
+      kind: "text",
+      text: "Hey — I'm Scout. Nice to meet you.",
+      at: 2,
+    } satisfies Message;
+    const greeted = reducer(added, {
+      type: "messageAdded",
+      threadId: announced.threadId,
+      message: greeting,
+    });
+
+    expect(greeted.bots[0]?.messages).toEqual([greeting]);
+  });
+});
+
+describe("canonical message races", () => {
+  it("does not rewind the active branch when POST repeats a user message after the reply", () => {
+    const sent = {
+      id: "sent",
+      role: "user",
+      kind: "text",
+      text: "Ship it",
+      at: 1,
+      parentId: null,
+    } satisfies Message;
+    const reply = {
+      id: "reply",
+      role: "bot",
+      kind: "text",
+      text: "Done",
+      at: 2,
+      parentId: sent.id,
+    } satisfies Message;
+    const bot = {
+      id: "race-folk",
+      threadId: "race-thread",
+      name: "Race",
+      title: "",
+      description: "",
+      notifications: true,
+      color: "green",
+      unread: false,
+      modelSelection: { instanceId: "codex", model: "default" },
+      messages: [sent, reply],
+      activeLeafId: reply.id,
+    } satisfies Bot;
+    const state = { ...initialState, bots: [bot] };
+
+    const next = reducer(state, {
+      type: "messageAdded",
+      threadId: bot.threadId,
+      message: sent,
+    });
+
+    expect(next).toBe(state);
+    expect(next.bots[0]?.activeLeafId).toBe(reply.id);
+    expect(next.bots[0]?.messages).toEqual([sent, reply]);
+  });
+});
+
+describe("section Chiefs", () => {
+  const bot = (id: string, section: string, chiefOfStaff = false) => ({
+    id,
+    threadId: `thread-${id}`,
+    name: id,
+    title: "",
+    description: "",
+    notifications: true,
+    color: "green" as const,
+    unread: false,
+    modelSelection: { instanceId: "codex", model: "default" },
+    section,
+    chiefOfStaff,
+  });
+
+  it("hands off only within the patched folk's section", () => {
+    const workChief = bot("work-a", "Work", true);
+    const workCandidate = bot("work-b", "Work");
+    const personalChief = bot("personal", "Personal", true);
+    const state = {
+      ...initialState,
+      bots: [workChief, workCandidate, personalChief].map((candidate) => ({ ...candidate, messages: [] })),
+    };
+
+    const next = reducer(state, {
+      type: "botPatched",
+      bot: { ...workCandidate, chiefOfStaff: true },
+    });
+
+    expect(next.bots.find((candidate) => candidate.id === workChief.id)?.chiefOfStaff).toBe(false);
+    expect(next.bots.find((candidate) => candidate.id === workCandidate.id)?.chiefOfStaff).toBe(true);
+    expect(next.bots.find((candidate) => candidate.id === personalChief.id)?.chiefOfStaff).toBe(true);
+  });
+
+  it("keeps other section Chiefs during an optimistic settings update", () => {
+    const workChief = bot("work-a", "Work", true);
+    const workCandidate = bot("work-b", "Work");
+    const personalChief = bot("personal", "Personal", true);
+    const state = {
+      ...initialState,
+      bots: [workChief, workCandidate, personalChief].map((candidate) => ({ ...candidate, messages: [] })),
+    };
+
+    const next = reducer(state, {
+      type: "updateBot",
+      botId: workCandidate.id,
+      patch: { chiefOfStaff: true },
+    });
+
+    expect(next.bots.find((candidate) => candidate.id === workChief.id)?.chiefOfStaff).toBe(false);
+    expect(next.bots.find((candidate) => candidate.id === workCandidate.id)?.chiefOfStaff).toBe(true);
+    expect(next.bots.find((candidate) => candidate.id === personalChief.id)?.chiefOfStaff).toBe(true);
+  });
+});
+
+describe("pending queued chip", () => {
+  const bot = {
+    id: "b1",
+    threadId: "t1",
+    name: "Ada",
+    title: "",
+    description: "",
+    notifications: false,
+    color: "green",
+    unread: false,
+    modelSelection: { instanceId: "acp", model: "fake" },
+  } satisfies Omit<Bot, "messages">;
+
+  it("records queue-fallback text and drops it when that user line lands", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const queued = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q1",
+      text: "later",
+    });
+    expect(queued.pendingQueued).toEqual({ t1: [{ queueId: "q1", text: "later" }] });
+    const landed = reducer(queued, {
+      type: "consumePendingQueued",
+      threadId: "t1",
+      queueId: "q1",
+    });
+    expect(landed.pendingQueued).toEqual({});
+  });
+
+  it("keeps a Shift+Enter multiline message as one entry", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const queued = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q-ml",
+      text: "line one\nline two",
+    });
+    expect(queued.pendingQueued).toEqual({ t1: [{ queueId: "q-ml", text: "line one\nline two" }] });
+    const landed = reducer(queued, {
+      type: "consumePendingQueued",
+      threadId: "t1",
+      queueId: "q-ml",
+    });
+    expect(landed.pendingQueued).toEqual({});
+  });
+
+  it("leaves the chip on the old thread after a task switch", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const queued = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q-stay",
+      text: "stay here",
+    });
+    const switched = reducer(queued, {
+      type: "botPatched",
+      bot: { ...bot, threadId: "t2", messages: [] },
+    });
+    expect(switched.pendingQueued).toEqual({ t1: [{ queueId: "q-stay", text: "stay here" }] });
+    expect(switched.pendingQueued[switched.bots[0]!.threadId]).toBeUndefined();
+    const drained = reducer(switched, {
+      type: "consumePendingQueued",
+      threadId: "t1",
+      queueId: "q-stay",
+    });
+    expect(drained.pendingQueued).toEqual({});
+  });
+
+  it("consumes only the matching queue id when two pending lines share text", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const first = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "qa",
+      text: "same",
+    });
+    const both = reducer(first, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "qb",
+      text: "same",
+    });
+    expect(both.pendingQueued).toEqual({
+      t1: [
+        { queueId: "qa", text: "same" },
+        { queueId: "qb", text: "same" },
+      ],
+    });
+    const afterOther = reducer(both, {
+      type: "consumePendingQueued",
+      threadId: "t1",
+      queueId: "qa",
+    });
+    expect(afterOther.pendingQueued).toEqual({ t1: [{ queueId: "qb", text: "same" }] });
+  });
+
+  it("does not add a chip when the drain frame arrives before the POST continuation", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const drained = reducer(withBot, {
+      type: "consumePendingQueued",
+      threadId: "t1",
+      queueId: "q1",
+    });
+    expect(drained.pendingQueued).toEqual({});
+    const late = reducer(drained, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q1",
+      text: "later",
+    });
+    expect(late.pendingQueued).toEqual({});
+    expect(late.consumedQueueIds).toEqual({});
+  });
+
+  it("reconciles a missed drain from hydration and rejects its late POST continuation", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const queued = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q-snapshot",
+      text: "already ran",
+    });
+    const canonical = {
+      id: "m-snapshot",
+      at: 100,
+      role: "user",
+      kind: "text",
+      text: "already ran",
+      queueId: "q-snapshot",
+    } satisfies Message;
+    const hydrated = reducer(queued, {
+      type: "hydrate",
+      bots: [{ ...bot, messages: [canonical] }],
+      groups: [],
+      computerControl: {},
+    });
+
+    expect(hydrated.pendingQueued).toEqual({});
+    expect(hydrated.consumedQueueIds["q-snapshot"]).toBe(true);
+    const late = reducer(hydrated, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q-snapshot",
+      text: "already ran",
+    });
+    expect(late.pendingQueued).toEqual({});
+    expect(late.consumedQueueIds["q-snapshot"]).toBeUndefined();
+  });
+
+  it("bounds unmatched queue tombstones from other clients", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    let state = withBot;
+    for (let index = 0; index < 100; index += 1) {
+      state = reducer(state, {
+        type: "consumePendingQueued",
+        threadId: "t1",
+        queueId: `foreign-${index}`,
+      });
+    }
+
+    expect(Object.keys(state.consumedQueueIds)).toHaveLength(64);
+    expect(state.consumedQueueIds["foreign-0"]).toBeUndefined();
+    expect(state.consumedQueueIds["foreign-99"]).toBe(true);
+
+    const late = reducer(state, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "foreign-99",
+      text: "already drained",
+    });
+    expect(late.pendingQueued).toEqual({});
+    expect(late.consumedQueueIds["foreign-99"]).toBeUndefined();
+  });
+
+  it("drops a cancelled pending chip without waiting for drain", () => {
+    const withBot = reducer(initialState, { type: "botPatched", bot });
+    const queued = reducer(withBot, {
+      type: "pendingQueued",
+      threadId: "t1",
+      queueId: "q-drop",
+      text: "never mind",
+    });
+    const cancelled = reducer(queued, {
+      type: "cancelQueued",
+      botId: "b1",
+      queueId: "q-drop",
+    });
+    expect(cancelled.pendingQueued).toEqual({});
+  });
+
+  it("drops a cancelled channel follow-up from its original task", () => {
+    const queued = reducer(initialState, {
+      type: "pendingQueued",
+      threadId: "room-task-1",
+      queueId: "q-room-drop",
+      text: "never mind",
+    });
+    const cancelled = reducer(queued, {
+      type: "cancelGroupQueued",
+      groupId: "room-1",
+      threadId: "room-task-1",
+      queueId: "q-room-drop",
+    });
+    expect(cancelled.pendingQueued).toEqual({});
+  });
+});
+
+describe("messageAdded leaf adoption", () => {
+  const baseBot = {
+    id: "folk-1",
+    threadId: "thread-1",
+    messages: [
+      { id: "m1", at: 1, role: "bot", kind: "text", text: "turn done" },
+      { id: "m2", at: 2, parentId: "m1", role: "user", kind: "text", text: "next question" },
+    ],
+    activeLeafId: "m2",
+  } as never as Bot;
+  const state = { ...initialState, bots: [baseBot] };
+
+  it("adopts the leaf for a message chaining onto it", () => {
+    const next = reducer(state, {
+      type: "messageAdded",
+      threadId: "thread-1",
+      message: { id: "m3", at: 3, parentId: "m2", role: "bot", kind: "text", text: "reply" } as never as Message,
+    });
+    expect(next.bots[0].activeLeafId).toBe("m3");
+  });
+
+  it("keeps the leaf when a late artifact is chain-inserted mid-branch", () => {
+    // the settle-time screenshot arrives parented to m1 while m2 is the leaf
+    const next = reducer(state, {
+      type: "messageAdded",
+      threadId: "thread-1",
+      message: { id: "shot", at: 3, parentId: "m1", role: "bot", kind: "screen", png: "x" } as never as Message,
+    });
+    expect(next.bots[0].activeLeafId).toBe("m2"); // the user's message stays the tail
+    expect(next.bots[0].messages.map((m) => m.id)).toContain("shot");
+  });
+
+  it("follows an edited prompt so the latest version is visible", () => {
+    const greeting = { id: "g", at: 1, role: "bot", kind: "text", text: "hi" };
+    const original = { id: "u1", at: 2, parentId: "g", role: "user", kind: "text", text: "v1" };
+    const reply = { id: "r1", at: 3, parentId: "u1", role: "bot", kind: "text", text: "answer 1" };
+    const branched = {
+      ...initialState,
+      bots: [
+        {
+          ...baseBot,
+          messages: [greeting, original, reply],
+          activeLeafId: "r1",
+        } as never as Bot,
+      ],
+    };
+    const afterEdit = reducer(branched, {
+      type: "messageAdded",
+      threadId: "thread-1",
+      message: { id: "u2", at: 4, parentId: "g", role: "user", kind: "text", text: "v2" } as never as Message,
+    });
+    expect(afterEdit.bots[0].activeLeafId).toBe("u2");
+
+    const afterReply = reducer(afterEdit, {
+      type: "messageAdded",
+      threadId: "thread-1",
+      message: { id: "r2", at: 5, parentId: "u2", role: "bot", kind: "text", text: "answer 2" } as never as Message,
+    });
+    expect(afterReply.bots[0].activeLeafId).toBe("r2");
+  });
+
+  it("follows the reply when the edited prompt was already in the tree", () => {
+    const greeting = { id: "g", at: 1, role: "bot", kind: "text", text: "hi" };
+    const original = { id: "u1", at: 2, parentId: "g", role: "user", kind: "text", text: "v1" };
+    const reply = { id: "r1", at: 3, parentId: "u1", role: "bot", kind: "text", text: "answer 1" };
+    const edited = { id: "u2", at: 4, parentId: "g", role: "user", kind: "text", text: "v2" };
+    const stuck = {
+      ...initialState,
+      bots: [
+        {
+          ...baseBot,
+          messages: [greeting, original, reply, edited],
+          activeLeafId: "r1",
+        } as never as Bot,
+      ],
+    };
+    const next = reducer(stuck, {
+      type: "messageAdded",
+      threadId: "thread-1",
+      message: { id: "r2", at: 5, parentId: "u2", role: "bot", kind: "text", text: "answer 2" } as never as Message,
+    });
+    expect(next.bots[0].activeLeafId).toBe("r2");
+  });
+
+  it("does not hide a newer reply when the thread frame names the edited prompt", () => {
+    const greeting = { id: "g", at: 1, role: "bot", kind: "text", text: "hi" };
+    const original = { id: "u1", at: 2, parentId: "g", role: "user", kind: "text", text: "v1" };
+    const reply = { id: "r1", at: 3, parentId: "u1", role: "bot", kind: "text", text: "answer 1" };
+    const edited = { id: "u2", at: 4, parentId: "g", role: "user", kind: "text", text: "v2" };
+    const nextReply = { id: "r2", at: 5, parentId: "u2", role: "bot", kind: "text", text: "answer 2" };
+    const stuck = {
+      ...initialState,
+      bots: [
+        {
+          ...baseBot,
+          messages: [greeting, original, reply, edited, nextReply],
+          activeLeafId: "r1",
+        } as never as Bot,
+      ],
+    };
+    const next = reducer(stuck, {
+      type: "threadActive",
+      threadId: "thread-1",
+      activeLeafId: "u2",
+    });
+    expect(next.bots[0].activeLeafId).toBe("r2");
+  });
+});
