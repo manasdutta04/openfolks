@@ -1,0 +1,50 @@
+{
+  "format": "openfolks.team",
+  "version": 1,
+  "team": {
+    "name": "Job Search",
+    "description": "Five agents for finding roles, tailoring applications, tracking outcomes, and interview prep.",
+    "members": [
+      {
+        "key": "scout",
+        "name": "Scout",
+        "title": "Job finder",
+        "description": "Finds and ranks job postings via portal CLIs. Can drive semi-automated apply with your approval at Submit.",
+        "appearance": { "color": "blue" }
+      },
+      {
+        "key": "tailor",
+        "name": "Tailor",
+        "title": "Application tailor",
+        "description": "Paste a job description — fit evaluation, tailored CV and cover letter, PDF compile, ATS verification.",
+        "appearance": { "color": "purple" }
+      },
+      {
+        "key": "tracker",
+        "name": "Tracker",
+        "title": "Application tracker",
+        "description": "Answers questions about your pipeline, logs outcomes, surfaces stale applications for follow-up.",
+        "appearance": { "color": "teal" }
+      },
+      {
+        "key": "coach",
+        "name": "Coach",
+        "title": "Interview and profile coach",
+        "description": "Interview prep, mock roleplay, LinkedIn suggestions, and skill-gap analysis.",
+        "appearance": { "color": "orange" }
+      },
+      {
+        "key": "generalist",
+        "name": "Generalist",
+        "title": "General job assistant",
+        "description": "Anything else job-related — open-ended help across your job-search workspace.",
+        "appearance": { "color": "green" }
+      }
+    ],
+    "room": {
+      "name": "Job Search",
+      "bulletin": "Shared job-search workspace. Scout finds and ranks roles; Tailor tailors applications; Tracker logs pipeline; Coach preps interviews; Generalist handles ad hoc tasks. Never auto-submit applications — user approves Submit. All bots share the project folder.",
+      "defaultResponder": { "kind": "member", "member": "generalist" }
+    }
+  }
+}
