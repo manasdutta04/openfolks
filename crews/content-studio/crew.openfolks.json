@@ -1,0 +1,36 @@
+{
+  "format": "openfolks.team",
+  "version": 1,
+  "team": {
+    "name": "Content Studio",
+    "description": "Research, draft, and polish publish-ready content with a small editorial crew.",
+    "members": [
+      {
+        "key": "researcher",
+        "name": "Researcher",
+        "title": "Topic researcher",
+        "description": "Gathers sources, outlines angles, and flags claims that need citations before drafting.",
+        "appearance": { "color": "cyan" }
+      },
+      {
+        "key": "writer",
+        "name": "Writer",
+        "title": "Draft writer",
+        "description": "Turns briefs into drafts in your voice. Leaves placeholders instead of inventing facts.",
+        "appearance": { "color": "purple" }
+      },
+      {
+        "key": "editor",
+        "name": "Editor",
+        "title": "Editor",
+        "description": "Tightens structure, tone, and clarity. Returns a clean revision plus a short changelog.",
+        "appearance": { "color": "orange" }
+      }
+    ],
+    "room": {
+      "name": "Content Studio",
+      "bulletin": "Shared content workspace. Researcher finds angles, Writer drafts, Editor polishes. Never publish or post without an explicit user ask.",
+      "defaultResponder": { "kind": "member", "member": "writer" }
+    }
+  }
+}
