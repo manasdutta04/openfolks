@@ -1,0 +1,32 @@
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "openfolks-composio",
+  "main": "src/index.ts",
+  "account_id": "ed3c81561d2059a5f0beab2a315b5df3",
+  "compatibility_date": "2026-08-18",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "vars": {
+    "COMPOSIO_API_BASE": "https://backend.composio.dev/api/v3.1",
+    "COMPOSIO_TOOLKIT_BASE": "https://backend.composio.dev/api/v3",
+    "REGISTRATION_MODE": "open"
+  },
+  "secrets": { "required": ["COMPOSIO_API_KEY"] },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "openfolks-composio",
+      "database_id": "3f3807b8-4bcd-4629-9ceb-d940697c1418",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    { "name": "REGISTRATION_LIMITER", "namespace_id": "91001", "simple": { "limit": 30, "period": 60 } },
+    { "name": "SESSION_LIMITER", "namespace_id": "91002", "simple": { "limit": 120, "period": 60 } }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.05 }
+  }
+}
