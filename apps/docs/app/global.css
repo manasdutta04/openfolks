@@ -1,0 +1,200 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+:root {
+  --folks-bg: #ffffff;
+  --folks-raised: #f7f8f8;
+  --folks-ink: #0a0a0b;
+  --folks-muted: #5f6570;
+  --folks-line: #e5e7ea;
+  --folks-accent: #009957;
+  --folks-accent-soft: #eaf8f1;
+
+  --color-fd-background: var(--folks-bg);
+  --color-fd-foreground: var(--folks-ink);
+  --color-fd-muted: var(--folks-raised);
+  --color-fd-muted-foreground: var(--folks-muted);
+  --color-fd-border: var(--folks-line);
+  --color-fd-primary: var(--folks-accent);
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-card: var(--folks-bg);
+  --color-fd-card-foreground: var(--folks-ink);
+  --color-fd-secondary: var(--folks-raised);
+  --color-fd-secondary-foreground: var(--folks-ink);
+  --color-fd-accent: var(--folks-accent-soft);
+  --color-fd-accent-foreground: #006b3d;
+}
+
+.dark {
+  --folks-bg: #070708;
+  --folks-raised: #131315;
+  --folks-ink: #f4f4f5;
+  --folks-muted: #9a9aa4;
+  --folks-line: #232327;
+  --folks-accent: #3fae6e;
+  --folks-accent-soft: #10271a;
+
+  --color-fd-primary-foreground: #07130c;
+  --color-fd-accent-foreground: #7bd69e;
+}
+
+html {
+  scrollbar-gutter: stable;
+  background: var(--folks-bg);
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0 !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+body {
+  background:
+    radial-gradient(circle at 75% -20%, color-mix(in srgb, var(--folks-accent) 8%, transparent), transparent 32rem),
+    var(--folks-bg);
+  color: var(--folks-ink);
+  letter-spacing: -0.012em;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--folks-accent) 24%, transparent);
+}
+
+.folks-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 660;
+  letter-spacing: -0.02em;
+}
+
+.folks-brand img {
+  width: 1.65rem;
+  height: 1.65rem;
+  border-radius: 0.5rem;
+}
+
+.folks-brand-docs {
+  border-left: 1px solid var(--folks-line);
+  color: var(--folks-muted);
+  font-size: 0.78rem;
+  font-weight: 520;
+  letter-spacing: 0;
+  margin-left: 0.1rem;
+  padding-left: 0.7rem;
+}
+
+.folks-product-shot {
+  margin: 2rem 0;
+}
+
+.folks-product-shot-frame {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--folks-line) 88%, transparent);
+  border-radius: 1.25rem;
+  background: #0a0a0b;
+  box-shadow:
+    0 1px 1px color-mix(in srgb, var(--folks-ink) 5%, transparent),
+    0 22px 60px color-mix(in srgb, var(--folks-ink) 10%, transparent);
+}
+
+.folks-product-shot img {
+  display: block;
+  width: 100%;
+  max-height: 38rem;
+  object-fit: cover;
+}
+
+.folks-product-shot figcaption {
+  color: var(--folks-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-top: 0.65rem;
+  text-align: center;
+}
+
+.folks-kicker {
+  color: var(--folks-accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.folks-lede {
+  color: var(--folks-muted);
+  font-size: 1.08rem;
+  line-height: 1.75;
+  max-width: 44rem;
+}
+
+.folks-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.75rem 0;
+}
+
+.folks-stat {
+  border: 1px solid var(--folks-line);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--folks-raised) 78%, transparent);
+  padding: 1rem;
+}
+
+.folks-stat strong,
+.folks-stat span {
+  display: block;
+}
+
+.folks-stat strong {
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.folks-stat span {
+  color: var(--folks-muted);
+  font-size: 0.78rem;
+  margin-top: 0.2rem;
+}
+
+#nd-sidebar,
+#nd-subnav {
+  background: color-mix(in srgb, var(--folks-bg) 92%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+#nd-sidebar {
+  border-right-color: var(--folks-line);
+}
+
+#nd-subnav {
+  border-bottom-color: var(--folks-line);
+}
+
+.prose :where(h2, h3, h4) {
+  letter-spacing: -0.035em;
+}
+
+.prose :where(a:not([data-card])) {
+  text-decoration-color: color-mix(in srgb, var(--folks-accent) 45%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+.prose :where(table) {
+  overflow: hidden;
+  border: 1px solid var(--folks-line);
+  border-radius: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .folks-stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .folks-product-shot-frame {
+    border-radius: 0.9rem;
+  }
+}
