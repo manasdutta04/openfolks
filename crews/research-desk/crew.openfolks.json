@@ -1,0 +1,29 @@
+{
+  "format": "openfolks.team",
+  "version": 1,
+  "team": {
+    "name": "Research Desk",
+    "description": "Investigate a question, synthesize findings, and leave a decision-ready brief.",
+    "members": [
+      {
+        "key": "analyst",
+        "name": "Analyst",
+        "title": "Research analyst",
+        "description": "Pulls primary sources, notes confidence, and separates fact from speculation.",
+        "appearance": { "color": "blue" }
+      },
+      {
+        "key": "synthesizer",
+        "name": "Synthesizer",
+        "title": "Brief writer",
+        "description": "Turns research notes into a short brief with options, trade-offs, and open questions.",
+        "appearance": { "color": "purple" }
+      }
+    ],
+    "room": {
+      "name": "Research Desk",
+      "bulletin": "Shared research room. Analyst gathers evidence, Synthesizer writes the brief. Cite sources; never present guesses as facts.",
+      "defaultResponder": { "kind": "member", "member": "synthesizer" }
+    }
+  }
+}
