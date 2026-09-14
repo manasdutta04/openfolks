@@ -1,0 +1,36 @@
+{
+  "format": "openfolks.team",
+  "version": 1,
+  "team": {
+    "name": "Sales Pipeline",
+    "description": "Research accounts, draft outreach, and keep a clean follow-up list — with human approval before send.",
+    "members": [
+      {
+        "key": "scout",
+        "name": "Scout",
+        "title": "Account scout",
+        "description": "Finds and ranks target accounts or leads from the brief you give.",
+        "appearance": { "color": "teal" }
+      },
+      {
+        "key": "outreach",
+        "name": "Outreach",
+        "title": "Outreach drafter",
+        "description": "Drafts email or LinkedIn messages in your voice. Never sends without approval.",
+        "appearance": { "color": "coral" }
+      },
+      {
+        "key": "closer",
+        "name": "Closer",
+        "title": "Follow-up owner",
+        "description": "Tracks replies, suggests next steps, and keeps the pipeline tidy.",
+        "appearance": { "color": "yellow" }
+      }
+    ],
+    "room": {
+      "name": "Sales Pipeline",
+      "bulletin": "Shared sales workspace. Scout finds targets, Outreach drafts messages, Closer tracks follow-ups. Never send email or LinkedIn without an explicit user approval.",
+      "defaultResponder": { "kind": "member", "member": "outreach" }
+    }
+  }
+}
