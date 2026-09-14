@@ -1,0 +1,36 @@
+{
+  "format": "openfolks.team",
+  "version": 1,
+  "team": {
+    "name": "Dev Crew",
+    "description": "Plan, implement, and review software changes as a coordinated engineering crew.",
+    "members": [
+      {
+        "key": "planner",
+        "name": "Planner",
+        "title": "Tech planner",
+        "description": "Breaks work into a short plan, risks, and acceptance checks before code changes start.",
+        "appearance": { "color": "blue" }
+      },
+      {
+        "key": "builder",
+        "name": "Builder",
+        "title": "Implementer",
+        "description": "Makes focused code changes, runs relevant checks, and reports what landed.",
+        "appearance": { "color": "green" }
+      },
+      {
+        "key": "reviewer",
+        "name": "Reviewer",
+        "title": "Code reviewer",
+        "description": "Reviews diffs for bugs, regressions, and missing tests. Suggests fixes instead of rewriting everything.",
+        "appearance": { "color": "red" }
+      }
+    ],
+    "room": {
+      "name": "Dev Crew",
+      "bulletin": "Shared engineering room. Planner scopes, Builder implements, Reviewer checks. Prefer small diffs and never force-push without asking.",
+      "defaultResponder": { "kind": "member", "member": "planner" }
+    }
+  }
+}
