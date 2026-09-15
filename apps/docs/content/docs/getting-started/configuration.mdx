@@ -1,0 +1,61 @@
+---
+title: Settings
+description: Engine paths, credentials, and the local configuration boundary.
+icon: Settings
+---
+
+Most people configure OpenFolks from the app. The packaged desktop validates credentials before saving them and stores supported secrets in the operating system's secure storage.
+
+## Engine discovery
+
+OpenFolks checks the inherited process path, common install locations, and the login shell. If an engine lives somewhere unusual, open **Settings → Engines** and point at the executable.
+
+Explicit paths help when you:
+
+- keep more than one CLI version;
+- use a wrapper script;
+- installed an engine where desktop apps cannot see it; or
+- launch OpenFolks from a shortcut or app menu with a different environment than your terminal.
+
+## Optional credentials
+
+| Credential | Unlocks |
+|---|---|
+| Composio project key | Connected apps and OAuth sessions |
+| Box API key | Hosted Linux computers |
+| ElevenLabs API key | Spoken replies and voice mode |
+| OpenRouter / OpenAI-compatible key | Extra models through Settings → Engines |
+| OpenCode API key | Optional alternative to an existing OpenCode login |
+
+Local chat through an installed CLI works without these.
+
+## Environment
+
+Source and headless runs can set supported environment variables before starting the harness. Prefer in-app settings for a packaged install — they validate inputs and keep secret values out of the renderer.
+
+- `OPENFOLKS_DATA_DIR` — data root (default `~/.openfolks`)
+- `OPENFOLKS_PORT` — harness port for source runs (default `8799`)
+
+### Per-instance Claude tool scope
+
+Source and headless installs can give Claude instances different built-in tool sets in `~/.openfolks/config.json`:
+
+```json
+{
+  "instances": {
+    "claude-browser": {
+      "driver": "claudeAgent",
+      "config": {
+        "tools": ["Read", "WebFetch", "WebSearch"],
+        "disallowedTools": ["Bash(git *)", "Edit", "Write"]
+      }
+    }
+  }
+}
+```
+
+`tools` selects Claude's available built-ins; an empty array disables every built-in; omitting it keeps Claude's default set. `disallowedTools` is an extra deny list of Claude tool-name patterns. These settings do not grant MCP integrations. Those stay on the instance's mounted integrations and the OpenFolks permission flow.
+
+<Callout type="warn" title="Do not put secrets in briefs">
+  A prompt becomes conversation history and may be sent to an engine. Use Settings or environment variables for credentials.
+</Callout>
