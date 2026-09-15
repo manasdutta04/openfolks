@@ -1,0 +1,41 @@
+---
+title: Engines
+description: Use the agent subscriptions and CLIs you already have.
+icon: BrainCircuit
+---
+
+OpenFolks does not sell a shared model account. It starts supported engine CLIs on your computer and normalizes their output through the local harness.
+
+<ProductScreenshot name="docs-engine-detection" alt="OpenFolks checking which engines are installed" caption="The app checks install and sign-in state without asking you to hunt for paths first." />
+
+## Built-in engines
+
+| Engine | How you sign in | Notes |
+|---|---|---|
+| Claude | Claude CLI login | Strong tools, approvals, sessions, and local computer use |
+| Codex | Codex CLI login | Model discovery, approvals, steering, computer tools |
+| Grok | Grok CLI login | ACP catalog and session support |
+| Cursor | Cursor Agent CLI login or API key | ACP driver with live model discovery |
+| Antigravity | Google Antigravity CLI login | Google consumer engine |
+| OpenCode | Existing OpenCode login or optional API key | Zen, Go, third-party, and local models through ACP |
+| Hermes | Hermes CLI login | ACP integration |
+| Pi | Pi CLI login | Native driver |
+| OpenRouter | OpenAI-compatible API key | Any OpenRouter, Groq, or compatible base URL |
+
+You can declare extra driver instances in local configuration. Unavailable engines stay visible with a reason instead of taking down the fleet.
+
+## Detection
+
+OpenFolks checks common install directories and the login shell in the background. Restart the app after you install or authenticate a CLI.
+
+If detection fails, set the executable in **Settings → Engines**. That works for every engine and is the reliable path for version managers, wrappers, custom builds, and Windows installs outside the normal path.
+
+## Model selection
+
+The picker groups models by provider and marks defaults. Supported engines can refresh their catalog from the installed CLI. Changing the model affects future turns. It does not rewrite earlier history.
+
+<ProductScreenshot name="docs-model-picker" alt="The OpenFolks model picker with cloud and local engines" caption="Every folk can use a different engine and model." />
+
+<Callout type="info" title="Billing stays with the provider">
+  Your CLI login or API key decides access and cost. OpenFolks does not turn one subscription into another provider.
+</Callout>
