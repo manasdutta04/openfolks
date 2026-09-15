@@ -1,0 +1,12 @@
+# Personal job-search data — never commit
+CLAUDE.md
+profile/
+cv/main_*.tex
+cv/main_*.pdf
+cover_letters/cover_*
+cover_letters/Cover_*
+documents/applications/
+job_search_tracker.csv
+job_scraper/seen_jobs.json
+company_research/
+*.pdf
