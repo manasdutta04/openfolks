@@ -1,0 +1,26 @@
+---
+title: Troubleshooting
+description: Find the failing layer, then apply the smallest safe fix.
+icon: Wrench
+---
+
+Most OpenFolks failures come from one of four layers: the desktop app, a local engine CLI, a connected service, or a computer backend.
+
+<Cards>
+  <Card title="Startup and ports" href="/docs/troubleshooting/startup-and-ports" description="App will not open, local server is down, or a port is taken." />
+  <Card title="Engines" href="/docs/providers/troubleshooting" description="CLI missing, model unavailable, sign-in failure, or reconnect loop." />
+  <Card title="Connected apps" href="/docs/troubleshooting/connected-apps" description="OAuth finishes but tools do not appear, or an account vanishes." />
+  <Card title="Updates" href="/docs/troubleshooting/updates" description="Download spins, restart does nothing, or the new version does not launch." />
+</Cards>
+
+## Useful evidence
+
+Before opening an issue, record:
+
+- OpenFolks version and operating system
+- selected engine and model
+- the exact visible error, not only “it failed”
+- whether the same CLI works in a terminal
+- whether restarting only the affected task changes the result
+
+Never post API keys, OAuth callback URLs, bearer tokens, or the contents of secure credential files.
