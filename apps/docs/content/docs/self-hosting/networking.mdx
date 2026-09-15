@@ -1,0 +1,22 @@
+---
+title: Networking
+description: Harness and webhook network boundaries.
+icon: Network
+---
+
+OpenFolks separates its network surfaces by trust.
+
+| Surface | Default bind | Purpose |
+|---|---|---|
+| Harness | `127.0.0.1:8799` | Full app API and event stream |
+| Webhook receiver | `127.0.0.1:8800` | Health and secret hook endpoints only |
+
+## Remote access
+
+OpenFolks is a desktop app for macOS, Windows, and Linux. The harness listens on loopback by default and is not meant for the public internet.
+
+For webhook delivery, proxy only the dedicated webhook receiver. Never forward the main harness port.
+
+## Port overrides
+
+Source runs can set `OPENFOLKS_PORT`. When the preferred harness port is occupied, packaged builds may fall back to another local port and pass the chosen address internally.
