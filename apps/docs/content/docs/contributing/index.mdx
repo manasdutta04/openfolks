@@ -1,0 +1,29 @@
+---
+title: Contributing
+description: Work with the architecture and keep changes reviewable.
+icon: GitPullRequest
+---
+
+OpenFolks is MIT-licensed and welcomes focused fixes. Read [CONTRIBUTING.md](http://github.com/manasdutta04/openfolks/blob/main/CONTRIBUTING.md) before opening a pull request.
+
+## Before you build
+
+- Search open and recently merged issues and pull requests.
+- Link overlapping work and coordinate with whoever is already in that area.
+- Extend the existing harness, Desk, and engine boundaries instead of adding a parallel system.
+- Open an issue before a large cross-platform change.
+
+## Local checks
+
+```bash
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm check:electron
+```
+
+Run the platform-specific package or native tests when your change touches macOS, Windows, Ubuntu, or Cloudflare.
+
+## Keep PRs narrow
+
+One concern per pull request is easier to review, test, revert, and release. Large prototypes belong on their own branch. Split them into independently green slices before asking for merge.
