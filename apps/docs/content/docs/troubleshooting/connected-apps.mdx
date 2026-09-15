@@ -1,0 +1,26 @@
+---
+title: Connected apps
+description: OAuth loops, missing tools, and connections that seem to vanish.
+icon: Unplug
+---
+
+## Connection completes but the Desk still shows disconnected
+
+1. Return to OpenFolks after the browser confirms success.
+2. Open **Connections** and use **Refresh connection status**.
+3. Check the **Connected** tab for the account, including its alias.
+4. Retry from the original folk after the account appears active.
+
+## The account is connected but the folk cannot use it
+
+Start a new task after connecting so the engine receives a fresh tool catalog. Name the service and account in the brief. If several accounts are connected, mention the intended alias.
+
+Some engines expose connected tools differently. Confirm the chosen engine supports MCP or the connected-tool bridge used by the Desk.
+
+## Official build says the service is unavailable
+
+Check internet connectivity and try again later before reconnecting every account. The packaged app keeps its installation identity across brief broker outages. Rotating or deleting local credentials during an outage can separate existing grants from the installation.
+
+## Source build asks for configuration
+
+Source and self-hosted builds do not automatically use the official managed service. Configure your own Composio project as described in [Self-hosted Composio](../connected-apps/self-hosted-composio.mdx).
