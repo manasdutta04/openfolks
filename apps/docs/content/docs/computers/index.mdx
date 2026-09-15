@@ -1,0 +1,28 @@
+---
+title: Give a folk a computer
+description: Pick the right desktop or isolated environment.
+icon: Monitor
+---
+
+A folk can work with no computer, use the machine running OpenFolks, or sit inside an isolated desktop.
+
+<ProductScreenshot name="docs-computer-panel" alt="OpenFolks computer panel with cloud, local VM, host, and off" caption="Computer placement is per folk. You can change it without changing the model." />
+
+| Backend | Isolation | Best for |
+|---|---|---|
+| This computer | None | Local apps and files you explicitly approve |
+| Local VM | Containerized desktop | Repeatable browser and desktop work on this machine |
+| Box cloud computer | Hosted remote desktop | Always-on isolated Linux |
+| Self-hosted VPS | Hardened container over SSH | Infrastructure you own |
+
+## Auto, local, and cloud
+
+Selection is explicit per folk. Auto may reuse a ready, verified backend. It does not silently provision every backend or turn on host control.
+
+## Preview and takeover
+
+The Computer panel can show live frames while a folk works. Supported cloud desktops also offer an interactive viewer. OpenFolks opens that viewer in the app when it can, with a browser fallback for external join flows.
+
+<Callout type="warn" title="Preview is not permission">
+  Starting a screen preview does not grant control. Local input needs a separate opt-in and stays inside the computer-use safety boundary.
+</Callout>
