@@ -1,0 +1,46 @@
+---
+title: Writing documentation
+description: Add and review Fumadocs pages in the same pull request as the feature.
+icon: FilePenLine
+---
+
+Public documentation lives in `apps/docs/content/docs`. Short contributor notes live in the repository's top-level [`docs/`](../../../../docs) folder. Do not add plan dumps, screenshot packs, or archived design trees there.
+
+Write as OpenFolks: folks, Desk, crews, Marketplace. Describe shipped behavior. Do not compare the product to other agent desktops.
+
+## Add a page
+
+Create a `.mdx` file with a title and description:
+
+```mdx
+---
+title: Feature name
+description: One sentence that says what the reader will learn.
+---
+
+Lead with the outcome the reader wanted.
+```
+
+Add the filename to the nearest `meta.json` so it appears in navigation.
+
+## Preview
+
+From the repository root:
+
+```bash
+pnpm docs:dev
+```
+
+Open `http://localhost:3000`. Before submitting:
+
+```bash
+pnpm docs:build
+```
+
+## Standard
+
+- Describe shipped behavior, not an open PR as though it has been released.
+- Lead with user outcomes and include exact recovery steps for known failures.
+- State platform and security boundaries plainly.
+- Prefer links to stable public docs over duplicating long internal records.
+- Update the changelog only when a release is actually published.
