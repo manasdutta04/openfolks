@@ -1,0 +1,19 @@
+---
+title: Data and backups
+description: What OpenFolks stores locally and what to keep.
+icon: DatabaseBackup
+---
+
+OpenFolks keeps application state under `~/.openfolks`: configuration, transcripts, attachments, device pairing, and the SQLite message store.
+
+## Back up
+
+Close OpenFolks before a filesystem-level backup so SQLite and config files are captured together. Preserve the entire `.openfolks` directory. Do not cherry-pick individual database files.
+
+## Do not copy secrets casually
+
+Packaged builds may protect credentials with operating-system secure storage. Copying the JSON directory to another machine does not necessarily make those credentials usable there, and it is not a portable credential export.
+
+## Disposable computer filesystems
+
+Local VM workspaces are mounted durably. A self-hosted VPS container filesystem is intentionally disposable. Move important artifacts to a durable workspace, repository, or connected app before removing or upgrading a container.
