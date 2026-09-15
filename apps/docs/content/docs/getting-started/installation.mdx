@@ -1,0 +1,56 @@
+---
+title: Installation
+description: Put OpenFolks on macOS, Windows, or Ubuntu.
+icon: Download
+---
+
+## Download
+
+Each link is the latest published build.
+
+| Platform | Package | Notes |
+|---|---|---|
+| macOS Apple silicon | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg) | Signed and notarized. Drag to Applications. |
+| macOS Intel | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg) | Signed and notarized. |
+| Windows x64 | [Installer](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe) | Per-user. Windows signing is not available yet. |
+| Ubuntu 24.04 x64 | [`.deb`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-amd64.deb) · [AppImage](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.AppImage) | Prefer the `.deb`. The AppImage is portable. |
+
+<Callout type="warn" title="Windows SmartScreen">
+  The Windows installer is not code-signed yet. Windows may show “Unknown publisher.” Confirm the file came from the official OpenFolks releases repository, then **More info → Run anyway**.
+</Callout>
+
+OpenFolks is [MIT licensed](http://github.com/manasdutta04/openfolks/blob/main/LICENSE).
+
+## Install an engine
+
+The Desk launches agent CLIs you already have. Claude and Codex are the usual first pair.
+
+1. Install the CLI from its provider.
+2. Run it once in a terminal and finish sign-in.
+3. Restart OpenFolks.
+4. Open the model picker. Ready engines appear; missing ones say what to do next.
+
+See [Engines](../providers/index.mdx) for the full list and path overrides.
+
+## Build from source
+
+Need Node.js 24+, pnpm 10.33.0, and at least one signed-in engine CLI.
+
+```bash
+git clone http://github.com/manasdutta04/openfolks.git
+cd openfolks
+corepack enable
+pnpm install --frozen-lockfile
+```
+
+Three terminals:
+
+```bash
+pnpm dev:server
+pnpm dev
+pnpm dev:desktop
+```
+
+## Where data lives
+
+Application data is `~/.openfolks`. Electron window and browser data use the normal per-platform app-data directory. Override the data root with `OPENFOLKS_DATA_DIR`.
