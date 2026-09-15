@@ -1,0 +1,29 @@
+---
+title: Routines and webhooks
+description: Start a fresh task on a weekday or from an external event.
+icon: CalendarClock
+---
+
+## Routines
+
+A routine runs once or on selected weekdays. Each run starts a fresh task using that folk's model, permissions, tools, and computer.
+
+<ProductScreenshot name="docs-automations" alt="An empty OpenFolks automations calendar" caption="Review work across a day, three days, or a week, and filter by folk." />
+
+Run receipts mark queued, active, waiting, completed, missed, failed, and cancelled work. OpenFolks must be running when a local routine becomes due.
+
+## Webhook triggers
+
+Webhooks start the same queued executor from an HTTP request. They are independent from schedules and use a dedicated receiver on `127.0.0.1:8800` by default.
+
+The receiver exposes health and secret hook routes only. It does not expose the rest of the OpenFolks API.
+
+Bearer authentication is preferred — the secret stays out of URLs and most access logs. A capability URL exists for senders that cannot set headers.
+
+## Reaching a local webhook
+
+To accept events from the public internet, proxy only the webhook receiver through a narrow relay or tunnel. Do not expose the main harness port.
+
+<Callout type="warn" title="The Desk must stay open">
+  Local routines and webhook deliveries are not hosted jobs. Closing the desktop app stops the local executor and receiver.
+</Callout>
