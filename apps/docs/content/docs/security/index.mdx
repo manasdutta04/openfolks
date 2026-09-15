@@ -1,0 +1,25 @@
+---
+title: Security model
+description: Boundaries that keep folks, credentials, and computers scoped.
+icon: ShieldCheck
+---
+
+OpenFolks is built around a local owner, explicit capabilities, and narrow process boundaries. Local-first is not risk-free. A folk with tool or computer access can still act on what you grant.
+
+## Core boundaries
+
+- The harness owns engine processes and listens on loopback.
+- The renderer receives configured-or-not credential state, not secret values.
+- Provider credentials are injected only into the process that needs them.
+- Risky actions become approval cards rather than implicit permission.
+- Local computer control is a separate opt-in and per-folk selection.
+- Cloud and VPS backends are validated before reuse.
+
+## Your part
+
+- Review approvals, especially shell commands, file writes, and actions in connected services.
+- Use dedicated environments for untrusted or destructive work.
+- Keep provider accounts and connected apps scoped to what that folk needs.
+- Keep OpenFolks and engine CLIs updated.
+
+Report security issues through the repository's documented channel. Do not disclose them in a public issue before a fix is available.
