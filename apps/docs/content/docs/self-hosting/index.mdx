@@ -1,0 +1,34 @@
+---
+title: Run it yourself
+description: Keep the harness and desktop on infrastructure you control.
+icon: Server
+---
+
+OpenFolks is local-first by default. The harness listens on loopback, engine CLIs run on your machine, and application state lives under `~/.openfolks`.
+
+## Typical setup
+
+1. Run OpenFolks on your personal macOS, Windows, or Ubuntu computer.
+2. Install and authenticate the engine CLIs you want.
+3. Add optional third-party keys only for services you need.
+4. Keep the harness on loopback.
+
+## What is still someone else's service
+
+Running OpenFolks yourself does not host every optional provider:
+
+- Engine providers authenticate and bill through their own CLI or API.
+- Composio owns connected-app OAuth grants unless you replace that integration.
+- Box owns managed cloud computers.
+- ElevenLabs synthesizes speech when voice is on.
+
+These are optional. Local chat through an installed CLI does not require them.
+
+## Headless during development
+
+```bash
+pnpm install --frozen-lockfile
+pnpm dev:server
+```
+
+The harness listens on `127.0.0.1:8799` by default (`OPENFOLKS_PORT` overrides). Keep it private. It owns engine processes, approvals, computers, and workspace configuration.
