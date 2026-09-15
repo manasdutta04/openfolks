@@ -1,0 +1,17 @@
+{
+  "title": "OpenFolks",
+  "root": true,
+  "pages": [
+    "index",
+    "getting-started",
+    "features",
+    "providers",
+    "computers",
+    "connected-apps",
+    "self-hosting",
+    "security",
+    "troubleshooting",
+    "changelog",
+    "contributing"
+  ]
+}
