@@ -1,0 +1,31 @@
+---
+title: Engine troubleshooting
+description: Missing CLIs, failed sign-in, model errors, and path mismatches.
+icon: Wrench
+---
+
+## “CLI not found”
+
+1. Open a terminal and run the CLI yourself.
+2. Confirm it is an executable, not only a shell alias.
+3. Restart OpenFolks after installation.
+4. Set the exact path in **Settings → Engines** if detection still fails.
+
+Desktop apps often inherit a different environment than a terminal. Common on Windows shortcuts, macOS Finder launches, and Linux app menus.
+
+## Authentication failures
+
+Run the provider's own status or login command in a terminal. OpenFolks uses that session. Installing the binary is not enough.
+
+A `401 Unauthorized` from `api.openai.com` means the launched Codex process did not receive valid authentication. Check `codex login status`, sign in again if needed, then restart OpenFolks. Do not paste a ChatGPT password into OpenFolks.
+
+## A selected model fails
+
+- Refresh the picker after updating the CLI.
+- Choose a model that account actually has.
+- Confirm a custom wrapper forwards the model argument and keeps the provider's expected environment.
+- Try the CLI directly with the same model to separate an account problem from a Desk problem.
+
+## Windows
+
+Use a real `.exe`, `.cmd`, or resolvable command path in the engine override. A CLI installed only in WSL is not a native Windows executable unless you add an explicit bridge.
