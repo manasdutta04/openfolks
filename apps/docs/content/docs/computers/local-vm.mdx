@@ -1,0 +1,47 @@
+---
+title: Local VM
+description: Run desktop work inside an isolated Docker or Podman environment.
+icon: Box
+---
+
+A Local VM gives a folk a containerized Linux desktop on the same machine as OpenFolks. Use it for browser work, downloads, and automation that should not touch the host desktop.
+
+## Requirements
+
+- Docker Desktop, Docker Engine, or a supported Podman setup
+- Enough memory and disk for the desktop image
+- A healthy container runtime visible to the OpenFolks process
+
+On Windows, Podman is the preferred runtime. OpenFolks checks Podman before Docker and validates the Windows-to-VM workspace mount before reusing a container.
+
+Before starting two desktops on Windows, confirm the Podman machine is running and has enough shared CPU, memory, and disk. Podman Desktop exposes that machine under **Settings → Resources**. Both OpenFolks desktops share that budget.
+
+## Two folk desktops
+
+1. Open **Settings → Local VM**, prepare the managed image, and choose **Per folk**.
+2. Set **Maximum per-folk desktops** to `2`.
+3. Give two folks **Local VM** and create each desktop from that folk's Computer panel.
+4. Choose **Open two desktops** from either folk to watch both in one workspace.
+
+Both desktops may keep running. Only one pane holds interactive control at a time. Switching control releases the previous pane first. Opening the two-up workspace never creates or starts a VM.
+
+Equivalent source configuration:
+
+```json
+{
+  "localVm": {
+    "mode": "per-bot",
+    "maxInstances": 2
+  }
+}
+```
+
+Local VMs always run on the same physical host as the OpenFolks process. `maxInstances: 2` does not pool one VM from a Mac and another from a Windows PC. To use Windows capacity, run OpenFolks on Windows with its Podman lane and create both per-folk desktops there. The bring-your-own VPS backend is an x86_64 Linux Docker host; do not point it at Windows as a remote Local VM. Cross-host Mac and Windows pooling is tracked in [issue #508](http://github.com/manasdutta04/openfolks/issues/508).
+
+## Persistence
+
+The folk's workspace and browser profile live in a durable mounted directory. Recreating the desktop can repair stale runtime state without deleting that workspace.
+
+## Ownership
+
+Local VM ownership uses a renewable lease. OpenFolks validates the resolved image and container safety contract before reuse instead of trusting only a mutable tag.
