@@ -1,0 +1,48 @@
+---
+title: Hire your first folk
+description: Pick an engine, a folder, and a working style.
+icon: Bot
+---
+
+## Before you start
+
+Install and sign in to at least one supported engine CLI. OpenFolks detects engines during onboarding and again from **Settings → Engines**.
+
+<ProductScreenshot name="docs-engine-detection" alt="OpenFolks detecting installed engines during onboarding" caption="Detection is automatic. Engines that need install or sign-in include the next step." />
+
+## Create the folk
+
+1. Select **New** in the sidebar.
+2. Choose **New folk**.
+3. Give it a name and a job.
+4. Select its engine and model.
+5. Choose a working folder if it should edit files or sit in a repository.
+
+The folder is the folk's starting context. It also keeps edits from wandering into the rest of the disk. Use a dedicated project folder for code, research, or writing.
+
+## First brief
+
+Ask for a concrete outcome and the constraints that matter:
+
+```text
+Review this project, run the tests, and explain the three highest-impact issues.
+Do not change files yet. Link each finding to the relevant file.
+```
+
+Once you trust the diagnosis, ask it to implement. Keep review and mutation as two steps you can check.
+
+## Tune the folk
+
+Open the **Folk profile** to change name, avatar, instructions, engine, model, working folder, and computer. Different folks can use different engines and folders at the same time.
+
+<Callout type="warn" title="Sign-in belongs to the CLI">
+  OpenFolks launches tools you installed. A 401 or a sign-in prompt means finish that engine's own login, then refresh detection in Settings.
+</Callout>
+
+## Next
+
+<Cards>
+  <Card title="Connect apps" href="/docs/connected-apps" description="Let the folk use services you authorize." />
+  <Card title="Add a computer" href="/docs/computers" description="A desktop for visual work." />
+  <Card title="Schedule the brief" href="/docs/features/automation" description="Turn a good prompt into a routine." />
+</Cards>
