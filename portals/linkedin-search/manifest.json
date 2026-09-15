@@ -1,0 +1,13 @@
+{
+  "id": "linkedin-search",
+  "name": "LinkedIn Job Search",
+  "version": "1.0.0",
+  "description": "Search public LinkedIn job listings (personal use, low volume).",
+  "defaultEnabled": true,
+  "triggerTerms": [
+    "linkedin jobs",
+    "linkedin search",
+    "linkedin posting"
+  ],
+  "requiredCapabilities": []
+}
