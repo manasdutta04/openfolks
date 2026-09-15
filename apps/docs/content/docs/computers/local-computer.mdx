@@ -1,0 +1,22 @@
+---
+title: This computer
+description: Let a supported folk control the local desktop through the bundled CUA boundary.
+icon: MousePointer2
+---
+
+Local control is off by default. The Electron main process owns the bundled CUA driver so operating-system permissions belong to OpenFolks, not a background helper.
+
+## macOS
+
+The packaged app can request Accessibility and Screen Recording. After granting either, restart the control session when prompted so macOS applies the grant.
+
+## Ubuntu
+
+Ubuntu 24.04 GNOME host control is temporarily disabled while the real-seat input-safety blocker in issue #345 is resolved. Packaged builds keep the pinned runtime for review, but OpenFolks does not start it and clears leftover opt-ins. Chat, screen preview, Cloud, and Local VM remain available. Do not start the bundled driver by hand.
+
+## Safety
+
+- Enabling local control globally does not assign it to a folk.
+- Choose **This computer** for each folk that should receive it.
+- Risky actions still go through approvals.
+- Missing permissions, unexpected binaries, unsupported desktop sessions, and failed health checks fail closed.
