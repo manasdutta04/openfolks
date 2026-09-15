@@ -1,0 +1,21 @@
+---
+title: Approvals and Backstage
+description: Stay in control when a folk asks, requests access, or does risky work.
+icon: ShieldCheck
+---
+
+OpenFolks turns structured engine events into conversation cards. Questions, choices, permission requests, tool activity, and failures stay on the task that produced them.
+
+## Approval cards
+
+When an engine supports approvals, the request appears in the thread instead of a terminal. Read the action and its scope before you allow it. Denying sends control back so the folk can pick a safer path.
+
+<ProductScreenshot name="approval-card" alt="An OpenFolks approval card inside a conversation" caption="Approvals stay next to the request and the folk's explanation." />
+
+## Backstage
+
+Open **Backstage** when the chat view is not enough. It shows this folk's live turn tape (tools, requests, errors) and the engine protocol recorded for the thread.
+
+## When a run drops
+
+OpenFolks retries transient stream failures. If retries end in an authentication or configuration error, fix the engine rather than hammering the task. See [Engine troubleshooting](../providers/troubleshooting.mdx).
