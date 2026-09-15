@@ -1,0 +1,24 @@
+---
+title: Startup and ports
+description: Launch failures and local server conflicts.
+icon: Power
+---
+
+The Electron app starts a local harness and serves the Desk from the same machine. The usual port is `8799`. If another process already owns it, packaged builds may pick a fallback automatically.
+
+## App opens but never becomes ready
+
+1. Quit every OpenFolks window.
+2. Confirm no old OpenFolks process remains.
+3. Start the app once and wait for the harness.
+4. If it still fails, inspect the desktop log.
+
+On macOS, packaged logs are under `~/Library/Logs/OpenFolks`. On Windows they are under the OpenFolks log directory in `%APPDATA%`.
+
+## Development port
+
+Use `OPENFOLKS_PORT` for a source-run harness. A packaged desktop build owns its server lifecycle and may choose a fallback if the preferred port is unavailable.
+
+## Isolate a test profile
+
+Set `OPENFOLKS_DATA_DIR` to run against a clean data directory. Useful for reproduction without touching a real workspace.
