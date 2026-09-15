@@ -1,0 +1,31 @@
+---
+title: Composio for self-hosters
+description: Project-key access, scoped permissions, and headless development.
+icon: KeyRound
+---
+
+The simplest open-source setup is for each install owner to create a Composio project and paste that project's key into OpenFolks. That avoids operating a shared credential broker and keeps usage on the user's own Composio account.
+
+## Least-privilege scoped key
+
+If you use a scoped Composio project key, grant:
+
+- Sessions: read and write
+- Toolkits: read
+- Connected accounts: read and write
+
+Connected-account write access is required so disconnect can revoke the grant.
+
+## Source and headless runs
+
+Set the key on the harness process:
+
+```bash
+COMPOSIO_API_KEY=ak_your_project_key pnpm dev:server
+```
+
+OpenFolks creates a stable random Composio user identifier and reuses the returned Session. It does not store raw Gmail, Slack, GitHub, or other provider tokens.
+
+## Managed broker
+
+The repository includes a Cloudflare Worker broker for managed deployments. It returns the same account-aware inventory while keeping broker credentials out of the renderer. Use it only when you intentionally operate a hosted connection service. Ordinary self-hosting does not need it.
