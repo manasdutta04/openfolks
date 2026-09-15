@@ -1,0 +1,14 @@
+{
+  "id": "freehire-search",
+  "name": "freehire Search",
+  "version": "1.0.0",
+  "description": "Search tech job listings via the freehire.me aggregator API.",
+  "defaultEnabled": true,
+  "triggerTerms": [
+    "freehire",
+    "tech job search",
+    "developer jobs",
+    "remote developer jobs"
+  ],
+  "requiredCapabilities": []
+}
