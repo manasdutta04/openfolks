@@ -1,0 +1,30 @@
+---
+title: Cloud computer and your VPS
+description: A managed Box desktop or a hardened container on a Linux server you own.
+icon: Cloud
+---
+
+## Box
+
+Add a Box API key in **Settings → Connections** to provision an isolated hosted Linux desktop. The computer can sleep and wake. Supported sessions offer a live viewer for temporary human control. Trial accounts retry creation with the provider's shorter auto-stop ceiling when required.
+
+Box is a third-party paid service after its trial. OpenFolks stores the credential locally and does not expose it to the renderer.
+
+## Bring your own VPS
+
+OpenFolks can control Docker on an x86_64 Linux server through an SSH config alias. The engine process stays on your machine. Only Docker commands and the managed desktop container run on the VPS.
+
+Your SSH alias should include connection multiplexing, keepalives, and a connect timeout. Connect once by hand to approve the host key, then verify:
+
+```bash
+ssh my-vps true
+docker -H ssh://my-vps info
+```
+
+The SSH user needs Docker access, which is root-equivalent on that server. Use a dedicated VPS and firewall inbound traffic to SSH only.
+
+The managed container publishes no ports, has no host mounts, and is checked before every attach. Treat its filesystem as disposable. Move important results out before deleting or upgrading the container.
+
+**Take control** opens the VPS desktop inside OpenFolks through a temporary SSH tunnel. noVNC stays on the container's private bridge. Only a random loopback port opens on your computer, and the tunnel closes with the viewer.
+
+Auto reuses an already-ready VPS without changing its lifecycle. To let Auto create or wake this folk's managed container, enable **Start VPS automatically** for that folk. That permission is off by default. When neither the VPS nor a local fallback is available, OpenFolks shows the exact VPS failure instead of silently omitting computer tools.
