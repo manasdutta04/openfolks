@@ -418,7 +418,7 @@ const fields = execFileSync(
 for (const expected of [
   "Package: openfolks",
   "Architecture: amd64",
-  "Maintainer: Milind Soni",
+  "Maintainer: OpenFolks contributors <openfolks@users.noreply.github.com>",
   "Section: utils",
   "Priority: optional",
 ]) {
