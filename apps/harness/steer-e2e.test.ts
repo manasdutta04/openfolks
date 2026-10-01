@@ -160,7 +160,7 @@ posixOnly("mid-turn steering e2e", () => {
 
     const rejected = await delayed;
     expect(rejected.status).toBe(404);
-    expect(rejected.body.error).toMatch(/no such bot/i);
+    expect(rejected.body.error).toMatch(/no such folk/i);
   }, 40_000);
 
   it("an engine without a live session preserves the message in the server-side queue", async () => {

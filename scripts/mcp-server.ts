@@ -842,7 +842,7 @@ export async function handleToolCall(
         body: JSON.stringify(patch),
       });
       if (!isRecord(result?.bot)) {
-        throw new Error("OpenFolks did not return the updated bot");
+        throw new Error("OpenFolks did not return the updated folk");
       }
       return { success: true, bot: projectBot(result.bot) };
     }

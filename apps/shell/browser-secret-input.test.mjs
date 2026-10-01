@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
-import { isSensitiveInput } from "../third_party/playwright-injected/secretInput.ts";
-import { sanitizeSnapshotUrl } from "../third_party/playwright-injected/publicUrl.ts";
-import { yamlEscapeValueIfNeeded } from "../third_party/playwright-injected/isomorphic/yaml.ts";
+import { isSensitiveInput } from "../../third_party/playwright-injected/secretInput.ts";
+import { sanitizeSnapshotUrl } from "../../third_party/playwright-injected/publicUrl.ts";
+import { yamlEscapeValueIfNeeded } from "../../third_party/playwright-injected/isomorphic/yaml.ts";
 
 describe("browser snapshot sensitive inputs", () => {
   it("redacts credentials, verification codes, and payment/identity fields", () => {
