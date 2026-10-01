@@ -180,6 +180,7 @@ describe("comms e2e (fake ACP fleet)", () => {
             config: { cli: FAKE_CLI, fullAuto: true },
           },
         },
+        openfolks: { onboardingComplete: true },
       }),
     );
 

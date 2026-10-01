@@ -70,6 +70,7 @@ posixOnly("routine failure notification wiring", () => {
             config: { cli: FAKE_CLI, fullAuto: false },
           },
         },
+        openfolks: { onboardingComplete: true },
       }),
     );
 

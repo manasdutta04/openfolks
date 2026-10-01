@@ -195,7 +195,7 @@ describe("MCP tool execution", () => {
           ],
         }],
       };
-      if (path === "/api/bots/bot-1/messages") {
+      if (path === "/api/bots/folk-1/messages") {
         expect(JSON.parse(String(options?.body))).toEqual({ text: "Investigate", threadId: "folk-task" });
         return { ok: true };
       }
@@ -331,7 +331,7 @@ describe("MCP tool execution", () => {
         models: { default: "gpt-5.6-sol", options: [{ id: "gpt-5.6-sol" }] },
         capabilities: { effortLevels: ["high"] },
       }] };
-      if (path === "/api/bots/bot-1") {
+      if (path === "/api/bots/folk-1") {
         expect(JSON.parse(String(options?.body))).toEqual({
           modelSelection: { instanceId: "codex", model: "gpt-5.6-sol", effort: "high" },
           requireAvailableModel: true,

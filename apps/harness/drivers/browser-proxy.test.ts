@@ -162,7 +162,7 @@ describe("browser MCP proxy", () => {
     hits.length = 0;
     const res = await callTool("browser_navigate", { url: "shop.example/cart" });
     // every call pins the profile the folk was mounted with
-    expect(hits).toEqual([{ path: "/v1/bots/bot-1/navigate", auth: `Bearer ${TOKEN}`, body: { url: "shop.example/cart", profile: "work" } }]);
+    expect(hits).toEqual([{ path: "/v1/bots/folk-1/navigate", auth: `Bearer ${TOKEN}`, body: { url: "shop.example/cart", profile: "work" } }]);
     expect(text(res)).toBe('Browser — Cart: https://shop.example/cart\nb1 link "Home"\nb2 textbox "Search" (value="shoes")');
     expect(res.result.isError).toBeFalsy();
   });
@@ -194,7 +194,7 @@ describe("browser MCP proxy", () => {
     await callTool("browser_select_option", { ref: "b2", values: ["a", "b"] });
     await callTool("browser_forward", {});
     const waited = await callTool("browser_wait_for", { text: "Cart", timeout_ms: 2000 });
-    expect(hits.map((hit) => [hit.path.replace("/v1/bots/bot-1/", ""), hit.body])).toEqual([
+    expect(hits.map((hit) => [hit.path.replace("/v1/bots/folk-1/", ""), hit.body])).toEqual([
       ["hover", { ref: "b1", profile: "work" }],
       ["drag", { from: "b1", to: "b2", profile: "work" }],
       ["select", { ref: "b2", values: ["India"], profile: "work" }],

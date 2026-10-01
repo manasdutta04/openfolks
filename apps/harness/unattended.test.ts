@@ -96,6 +96,7 @@ posixOnly("unattended turns keep asking", () => {
             config: { cli: FAKE_CLI, fullAuto: false },
           },
         },
+        openfolks: { onboardingComplete: true },
       }),
     );
     child = spawn(process.execPath, [join(SERVER_DIR, "index.ts")], {
