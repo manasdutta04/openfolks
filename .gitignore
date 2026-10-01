@@ -7,6 +7,9 @@ dist-server
 *.local
 .DS_Store
 *.tsbuildinfo
+# Accidental tsc emit next to TypeScript sources
+shared/*.js
+apps/desk/lib/*.js
 __pycache__/
 apps/shell/resources/speech-helper
 apps/shell/resources/OpenFolks Speech.app
