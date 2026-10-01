@@ -14,9 +14,9 @@ describe("openfolks import", () => {
     const project = mkdtempSync(join(tmpdir(), "openfolks-project-"));
     try {
       prepareProjectFolder(project);
-      expect(existsSync(join(project, "job_search_tracker.csv"))).toBe(true);
-      expect(existsSync(join(project, "profile", "04-job-evaluation.md"))).toBe(true);
       expect(existsSync(join(project, "portals", "freehire-search", "cli", "src", "cli.ts"))).toBe(true);
+      expect(existsSync(join(project, "portals", "linkedin-search", "cli", "src", "cli.ts"))).toBe(true);
+      expect(existsSync(join(project, "tools", "verify_pdf.py"))).toBe(true);
 
       const store = new Store(() => ({ instanceId: "claude", model: "claude-sonnet-4-20250514" }));
       const result = importOpenFolksCrew(store, project, { instanceId: "claude", model: "claude-sonnet-4-20250514" });

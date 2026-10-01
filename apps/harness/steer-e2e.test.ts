@@ -117,9 +117,9 @@ posixOnly("mid-turn steering e2e", () => {
       // (appended when it was sent — mid-turn), then ONE reply carrying it
       expect(texts.slice(1)).toEqual([
         "user:first",
-        "folk:hello from fake claude",
+        "bot:hello from fake claude",
         "user:and also this",
-        "folk:reply to: first + steered: and also this",
+        "bot:reply to: first + steered: and also this",
       ]);
       const steered = bot.messages.find((m: any) => m.text === "and also this");
       expect(steered.steered).toBe(true);

@@ -13,17 +13,24 @@ function legacyStorageKey(botId: string): string {
   return `${STORAGE_PREFIX_LEGACY}:${botId}`;
 }
 
+function isDomLocalStorage(storage: object): boolean {
+  try {
+    return typeof globalThis.localStorage !== "undefined" && storage === globalThis.localStorage;
+  } catch {
+    return false;
+  }
+}
+
 export function readComputerPanelView(
   botId: string,
-  storage: Pick<Storage, "getItem"> = localStorage,
+  storage: Pick<Storage, "getItem"> = globalThis.localStorage,
 ): ComputerPanelView {
   try {
     const key = storageKey(botId);
     const legacy = legacyStorageKey(botId);
-    const value =
-      storage === localStorage
-        ? readMigratedStorage(key, legacy)
-        : (storage.getItem(key) ?? storage.getItem(legacy));
+    const value = isDomLocalStorage(storage)
+      ? readMigratedStorage(key, legacy)
+      : (storage.getItem(key) ?? storage.getItem(legacy));
     if (value === "browser") return value;
   } catch {
     // Storage can be unavailable in hardened or private renderer sessions.
@@ -34,10 +41,10 @@ export function readComputerPanelView(
 export function writeComputerPanelView(
   botId: string,
   view: ComputerPanelView,
-  storage: Pick<Storage, "setItem"> = localStorage,
+  storage: Pick<Storage, "setItem"> = globalThis.localStorage,
 ): void {
   try {
-    if (storage === localStorage) {
+    if (isDomLocalStorage(storage)) {
       writeStorage(storageKey(botId), view);
       return;
     }
