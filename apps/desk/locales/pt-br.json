@@ -1,6 +1,4 @@
 {
-  "noEngines.title": "Instale um mecanismo para seus Folks rodarem",
-  "noEngines.intro": "O OpenFolks não traz um modelo próprio — seus Folks rodam em uma CLI de IA instalada neste computador, usando seu login existente. Configure qualquer uma delas e seu Desk ganha vida.",
   "engines.cloud": "Nuvem",
   "engines.local": "Local",
   "common.checkAgain": "Verificar novamente",

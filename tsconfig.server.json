@@ -19,7 +19,8 @@
     ]
   },
   "include": [
-    "apps/harness"
+    "apps/harness",
+    "shared"
   ],
   "exclude": [
     "apps/harness/drivers/pi-mcp-extension.ts"
