@@ -52,6 +52,7 @@ posixOnly("mid-turn steering e2e", () => {
     writeFileSync(
       join(home, ".openfolks", "config.json"),
       JSON.stringify({
+        openfolks: { onboardingComplete: true },
         instances: {
           claude: { driver: "claudeAgent", environment: { FAKE_CLAUDE_MODE: "slow" }, config: { cli: FAKE_CLAUDE, permissionMode: "bypassPermissions" } },
           claudeRace: {

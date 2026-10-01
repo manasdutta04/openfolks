@@ -292,17 +292,30 @@ function parseNodeShebang(file: string): ResolvedSpawn | null {
     }
   }
   if (!/^#!.*\bnode(\.exe)?\b/.test(head)) return null;
-  const node = nodeExe(dirname(file));
+  const node = process.platform === "win32" ? nodeExe(dirname(file)) : posixNodeExe();
   return node ? { command: node, args: [file] } : null;
 }
 
+/** Node binary for running a #!node script on POSIX. Electron must not be
+ * mistaken for node when the harness runs inside the packaged shell. */
+function posixNodeExe(): string | null {
+  return (process.versions as Record<string, string | undefined>).electron ? null : process.execPath;
+}
+
 /**
- * How to actually spawn `cli` with `args` on this platform. Identity
- * everywhere but win32 — POSIX already resolves PATH and #! itself.
+ * How to actually spawn `cli` with `args` on this platform. Windows needs
+ * PATHEXT and shebang rewriting; POSIX still needs #!node scripts run through
+ * node when they are not marked executable (the fake CLIs in CI).
  */
 /** Resolve a single command word (no tokenizer) — the platform spawn rules. */
 function resolveWord(cli: string, args: string[]): ResolvedSpawn {
-  if (process.platform !== "win32") return { command: cli, args };
+  if (process.platform !== "win32") {
+    if ((/[\\/]/.test(cli) || /^[a-zA-Z]:/.test(cli)) && isFile(cli)) {
+      const viaNode = parseNodeShebang(cli);
+      if (viaNode) return { command: viaNode.command, args: [...viaNode.args, ...args] };
+    }
+    return { command: cli, args };
+  }
   const file = whichWin(cli);
   // not found: hand back the name so spawn reports its own ENOENT
   if (!file) return { command: cli, args };

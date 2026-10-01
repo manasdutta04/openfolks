@@ -168,8 +168,25 @@ endLocal & goto #_undefined_# 2>NUL || title %COMSPEC% & "%_prog%"  "%dp0%\\node
 `;
 
 describe("resolveCli", () => {
-  it.skipIf(process.platform === "win32")("is identity off Windows — the kernel already resolves PATH and #!", () => {
+  it.skipIf(process.platform === "win32")("is identity for bare names on POSIX", () => {
     expect(resolveCli("claude", ["-p", "hi"])).toEqual({ command: "claude", args: ["-p", "hi"] });
+  });
+
+  posixIt("runs a #!node script through node when it is not executable", async () => {
+    const scriptDir = mkdtempSync(join(tmpdir(), "omb-shebang-"));
+    const script = join(scriptDir, "ombfake-cli.ts");
+    writeFileSync(script, "#!/usr/bin/env node\nconsole.log('shebang ' + process.argv.slice(2).join(','));\n");
+    try {
+      const resolved = resolveCli(script, ["a", "b"]);
+      expect(resolved.command).toBe(process.execPath);
+      expect(resolved.args).toEqual([script, "a", "b"]);
+      const stdout = await new Promise<string>((resolve, reject) =>
+        execFile(resolved.command, resolved.args, (err, out) => (err ? reject(err) : resolve(out))),
+      );
+      expect(stdout.trim()).toBe("shebang a,b");
+    } finally {
+      rmSync(scriptDir, { recursive: true, force: true });
+    }
   });
 });
 

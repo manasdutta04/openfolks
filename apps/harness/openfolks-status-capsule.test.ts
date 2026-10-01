@@ -59,11 +59,29 @@ function canonical(value: JsonValue): string {
   return JSON.stringify(canonicalValue(value));
 }
 
+function unsignedDocument(capsule: TestCapsule): JsonObject {
+  const document: JsonObject = {
+    schema: capsule.schema,
+    observed_at: capsule.observed_at,
+    fresh_until: capsule.fresh_until,
+    ttl_seconds: capsule.ttl_seconds,
+    source_sha256: capsule.source_sha256,
+    dual_view_sha256: capsule.dual_view_sha256,
+    refresh_status: capsule.refresh_status,
+    runtime_state: capsule.runtime_state,
+    mode: capsule.mode,
+    max_instances: capsule.max_instances,
+    ready_count: capsule.ready_count,
+    slots: capsule.slots,
+    ui: capsule.ui,
+  };
+  if (capsule.failure_reason !== undefined) document.failure_reason = capsule.failure_reason;
+  return document;
+}
+
 function sign(value: TestCapsule): TestCapsule {
-  const signed: TestCapsule = { ...value };
-  delete signed.receipt_sha256;
-  signed.receipt_sha256 = `sha256:${createHash("sha256").update(canonical(signed)).digest("hex")}`;
-  return signed;
+  const receipt_sha256 = `sha256:${createHash("sha256").update(canonical(unsignedDocument(value))).digest("hex")}`;
+  return { ...value, receipt_sha256 };
 }
 
 function ui(twoUp: boolean): JsonObject {
@@ -158,7 +176,7 @@ posixOnly("readOpenFolksStatus", () => {
     // Cross-language receipt produced by scripts/aos_openfolks_status.py
     // for this exact normalized fixture.
     expect(capsule.receipt_sha256).toBe(
-      "sha256:2f76115fcbf37dfc5406d4a7a460c5e3016ff87184cd9e314bf4cc11022e2d7c",
+      "sha256:303a2811d478dcd935411e9bd13aa813a4c92f88fece6e6e8e32b9e72291a287",
     );
     const path = cachePath(capsule);
 

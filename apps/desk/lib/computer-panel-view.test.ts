@@ -16,6 +16,16 @@ describe("computer panel view persistence", () => {
     expect(readComputerPanelView("another-folk", storage)).toBe("computer");
   });
 
+  it("reads a legacy storage key when the OpenFolks key is absent", () => {
+    const values = new Map<string, string>([["omb-computer-panel-view:sprout", "browser"]]);
+    const storage = {
+      getItem: (key: string) => values.get(key) ?? null,
+      setItem: (key: string, value: string) => values.set(key, value),
+    };
+
+    expect(readComputerPanelView("sprout", storage)).toBe("browser");
+  });
+
   it("falls back safely for stale values or blocked storage", () => {
     expect(readComputerPanelView("sprout", { getItem: () => "unknown" })).toBe("computer");
     expect(readComputerPanelView("sprout", { getItem: () => { throw new Error("blocked"); } })).toBe("computer");

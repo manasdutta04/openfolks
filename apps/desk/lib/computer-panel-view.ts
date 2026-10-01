@@ -19,10 +19,11 @@ export function readComputerPanelView(
 ): ComputerPanelView {
   try {
     const key = storageKey(botId);
+    const legacy = legacyStorageKey(botId);
     const value =
       storage === localStorage
-        ? readMigratedStorage(key, legacyStorageKey(botId))
-        : storage.getItem(key);
+        ? readMigratedStorage(key, legacy)
+        : (storage.getItem(key) ?? storage.getItem(legacy));
     if (value === "browser") return value;
   } catch {
     // Storage can be unavailable in hardened or private renderer sessions.
