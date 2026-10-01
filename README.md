@@ -4,6 +4,20 @@ A local-first desktop workplace for AI teammates. You hire **folks**, give them 
 
 Windows, macOS, and Linux. Your conversations, keys, and files stay on the machine unless you send them out through an engine or a connected app.
 
+## Download
+
+Installers are on [GitHub Releases](https://github.com/manasdutta04/openfolks/releases). Builds are unsigned.
+
+**macOS** — after installing from the DMG, clear Gatekeeper quarantine once:
+
+```bash
+xattr -cr /Applications/OpenFolks.app
+```
+
+Or right-click the app → **Open** → **Open**.
+
+**Windows** — if SmartScreen warns, choose **More info** → **Run anyway**.
+
 ## The workplace
 
 - **Desk** — HQ. Conversations, unread work, crew maps, settings.

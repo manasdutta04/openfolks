@@ -7,9 +7,9 @@
 # Publishes a GitHub Release on this same repo with installers + update feeds
 # (latest.yml / latest-mac.yml / latest-linux.yml) so electron-updater works.
 #
-# Mac signing/notarization runs when MAC_CERT_* and APPLE_API_* secrets exist;
-# otherwise macOS artifacts are produced unsigned so a first public release
-# can still ship.
+# Builds ship unsigned by default (no Apple/Windows signing certs required).
+# Users clear Gatekeeper / SmartScreen the same way other open-source Electron
+# apps do — see the release notes.
 name: Release
 
 on:
@@ -44,7 +44,6 @@ jobs:
       version: ${{ steps.pin.outputs.version }}
       tag: ${{ steps.pin.outputs.tag }}
       publish: ${{ steps.pin.outputs.publish }}
-      sign_mac: ${{ steps.secrets.outputs.sign_mac }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -62,7 +61,6 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           if [ "$EVENT_NAME" = "push" ]; then
             echo "publish=true" >> "$GITHUB_OUTPUT"
-            # Tag must match package.json, otherwise updater metadata lies.
             if [ "${GITHUB_REF_NAME}" != "$tag" ]; then
               echo "::error::Pushed tag ${GITHUB_REF_NAME} does not match package.json version $tag"
               exit 1
@@ -70,24 +68,7 @@ jobs:
           else
             echo "publish=${INPUT_PUBLISH:-true}" >> "$GITHUB_OUTPUT"
           fi
-          echo "Releasing OpenFolks $version from $sha"
-      - id: secrets
-        env:
-          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
-          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-        run: |
-          if [ -n "$MAC_CERT_P12_BASE64" ] && [ -n "$MAC_CERT_PASSWORD" ] \
-            && [ -n "$APPLE_API_KEY_P8_BASE64" ] && [ -n "$APPLE_API_KEY_ID" ] \
-            && [ -n "$APPLE_API_ISSUER_ID" ]; then
-            echo "sign_mac=true" >> "$GITHUB_OUTPUT"
-            echo "macOS artifacts will be signed and notarized"
-          else
-            echo "sign_mac=false" >> "$GITHUB_OUTPUT"
-            echo "::warning::Mac signing/notarization secrets are missing — shipping unsigned macOS builds"
-          fi
+          echo "Releasing OpenFolks $version from $sha (unsigned desktop builds)"
       - name: Refuse to overwrite a published release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -241,38 +222,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: rm -rf dist dist-server dist-native release
-
-      - name: Import Developer ID certificate
-        if: needs.prepare.outputs.sign_mac == 'true'
+      - name: Package both architectures (unsigned)
         env:
-          MAC_CERT_P12_BASE64: ${{ secrets.MAC_CERT_P12_BASE64 }}
-          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        run: |
-          KEYCHAIN="$RUNNER_TEMP/release.keychain-db"
-          KEYCHAIN_PASSWORD="$(uuidgen)"
-          echo "$MAC_CERT_P12_BASE64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
-          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-          security set-keychain-settings -lut 21600 "$KEYCHAIN"
-          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-          security import "$RUNNER_TEMP/cert.p12" -P "$MAC_CERT_PASSWORD" -A \
-            -t cert -f pkcs12 -k "$KEYCHAIN"
-          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN"
-          security list-keychains -d user -s "$KEYCHAIN" login.keychain
-          rm "$RUNNER_TEMP/cert.p12"
-
-      - name: Package both architectures
-        env:
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ needs.prepare.outputs.sign_mac == 'true' && 'true' || 'false' }}
+          CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: pnpm package:mac
-
-      - name: Verify signature before notarization
-        if: needs.prepare.outputs.sign_mac == 'true'
-        run: |
-          for app in release/mac-arm64/OpenFolks.app release/mac/OpenFolks.app; do
-            codesign --verify --deep --strict "$app"
-            echo "ok: $app"
-          done
-
       - name: Gate packaged servers
         run: |
           for app in release/mac-arm64/OpenFolks.app release/mac/OpenFolks.app; do
@@ -280,48 +233,11 @@ jobs:
             OMB_SMOKE_DIST="$res/server" node scripts/smoke-packaged-server.mjs \
               || { echo "::error::packaged server in $app failed to start"; exit 1; }
           done
-
-      - name: Notarize artifacts
-        if: needs.prepare.outputs.sign_mac == 'true'
-        env:
-          APPLE_API_KEY_P8_BASE64: ${{ secrets.APPLE_API_KEY_P8_BASE64 }}
-          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
-        run: |
-          echo "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$RUNNER_TEMP/notary.p8"
-          for f in release/*.dmg release/*.zip; do
-            out=$(xcrun notarytool submit "$f" \
-              --key "$RUNNER_TEMP/notary.p8" \
-              --key-id "$APPLE_API_KEY_ID" \
-              --issuer "$APPLE_API_ISSUER_ID" \
-              --wait 2>&1)
-            echo "$out" | tail -2
-            echo "$out" | grep -q "status: Accepted" || { echo "::error::notarization not Accepted for $f"; exit 1; }
-          done
-          rm "$RUNNER_TEMP/notary.p8"
-
-      - name: Staple and refresh feeds
-        if: needs.prepare.outputs.sign_mac == 'true'
-        run: |
-          xcrun stapler staple release/OpenFolks-*-arm64.dmg
-          xcrun stapler staple release/OpenFolks-*-x64.dmg
-          xcrun stapler staple release/mac-arm64/OpenFolks.app
-          xcrun stapler staple release/mac/OpenFolks.app
-          v=$(node -p "require('./package.json').version")
-          rm -f "release/OpenFolks-$v-arm64.zip" "release/OpenFolks-$v-x64.zip"
-          ditto -c -k --sequesterRsrc --keepParent release/mac-arm64/OpenFolks.app "release/OpenFolks-$v-arm64.zip"
-          ditto -c -k --sequesterRsrc --keepParent release/mac/OpenFolks.app "release/OpenFolks-$v-x64.zip"
-          node scripts/regenerate-blockmaps.mjs \
-            "release/OpenFolks-$v-arm64.zip" "release/OpenFolks-$v-x64.zip" \
-            "release/OpenFolks-$v-arm64.dmg" "release/OpenFolks-$v-x64.dmg"
-          node scripts/regenerate-mac-feed.mjs
-
       - name: Stable-named copies
         run: |
           v=$(node -p "require('./package.json').version")
           cp "release/OpenFolks-$v-arm64.dmg" release/OpenFolks.dmg
           cp "release/OpenFolks-$v-x64.dmg" release/OpenFolks-intel.dmg
-
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: mac-release
@@ -380,13 +296,25 @@ jobs:
           notes="$(cat <<EOF
           ## OpenFolks ${VERSION}
 
-          First public desktop build with automated multi-platform packaging.
+          Desktop builds for Windows, macOS, and Linux. Builds are **unsigned** — after install, allow the app once (same pattern as other open-source Electron apps).
 
           ### Downloads
           - **Windows:** \`OpenFolks-setup.exe\`
           - **macOS Apple silicon:** \`OpenFolks.dmg\`
           - **macOS Intel:** \`OpenFolks-intel.dmg\`
           - **Linux:** \`OpenFolks-amd64.deb\` / \`OpenFolks.AppImage\`
+
+          ### macOS — clear Gatekeeper quarantine
+          After you drag OpenFolks into Applications, run:
+
+          \`\`\`bash
+          xattr -cr /Applications/OpenFolks.app
+          \`\`\`
+
+          Or right-click the app → **Open** → **Open** when macOS warns about an unidentified developer.
+
+          ### Windows — SmartScreen
+          SmartScreen may say the publisher is unknown. Choose **More info** → **Run anyway**.
 
           Built from \`${SHA}\`.
           EOF

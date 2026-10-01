@@ -1,6 +1,7 @@
 # Releasing
 
 Desktop packages use electron-builder for **Windows**, **macOS**, and **Linux**.
+Builds ship **unsigned** by default (no Apple Developer ID or Windows code-signing cert required).
 
 ## Automated releases (preferred)
 
@@ -19,14 +20,25 @@ installers and publishes a GitHub Release on this repo (with `latest.yml` /
 
 You can also run **Actions → Release → Run workflow** and choose Publish.
 
-### Optional macOS signing
+## After users install (unsigned builds)
 
-If these repository secrets are set, macOS builds are signed and notarized:
+### macOS
 
-- `MAC_CERT_P12_BASE64`, `MAC_CERT_PASSWORD`
-- `APPLE_API_KEY_P8_BASE64`, `APPLE_API_KEY_ID`, `APPLE_API_ISSUER_ID`
+Gatekeeper blocks unidentified developers. After installing from the DMG:
 
-Without them, macOS artifacts still ship unsigned.
+```bash
+xattr -cr /Applications/OpenFolks.app
+```
+
+Or right-click **OpenFolks.app** → **Open** → confirm **Open**.
+
+### Windows
+
+SmartScreen may warn that the publisher is unknown. Use **More info** → **Run anyway**.
+
+### Linux
+
+Install the `.deb` or run the `.AppImage` as usual; no signing step.
 
 ## Local packaging
 
@@ -39,8 +51,8 @@ pnpm package:linux
 `package:prepare` builds Desk, the harness, updater assets, and cloudflared before the platform packager runs.
 
 - Product: OpenFolks (`com.openfolks.app`)
+- Maintainer: manasdutta04
 - License: MIT
 - Auto-update metadata publishes to this GitHub repo (see `electron-builder.yml`)
-- Windows ship notes live under `.claude/skills/windows-release/`
 
 Smoke the packaged harness (`pnpm test:packaged-server`) when you change boot or resource paths under `apps/shell`.
