@@ -732,7 +732,7 @@ export function instanceConfigs(cfg: AppConfig): InstanceConfigMap {
   // one: like claude and codex it needs no credential from us, just the CLI
   // installed and logged in (it shows up unavailable otherwise). The API-key
   // `grok` driver stays registered but out of the default fleet — that key is
-  // a credential Milind doesn't want to manage; an `instances` entry brings
+  // a credential we don't want to manage by default; an `instances` entry brings
   // it back anytime.
   //
   // Google rides `antigravityAgent` (the `agy` CLI), not `geminiAgent`:

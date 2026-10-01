@@ -153,7 +153,7 @@ linux:
   executableName: openfolks
   synopsis: Your own team of AI bots, in a chat app
   description: A local-first chat app for running a team of AI agents.
-  maintainer: OpenFolks contributors <openfolks@users.noreply.github.com>
+  maintainer: manasdutta04 <122201926+manasdutta04@users.noreply.github.com>
   vendor: OpenFolks
   syncDesktopName: true
   # The reviewed x64 CLI runtime is staged before packaging and remains
