@@ -449,18 +449,18 @@ try {
     "applications",
     "com.openfolks.app.desktop",
   );
-  const scalableIcon = path.join(
+  const pngIcon = path.join(
     extracted,
     "usr",
     "share",
     "icons",
     "hicolor",
-    "scalable",
+    "256x256",
     "apps",
-    "openfolks.svg",
+    "openfolks.png",
   );
   requireFile(desktopFile);
-  requireFile(scalableIcon);
+  requireFile(pngIcon);
   const desktop = readFileSync(desktopFile, "utf8");
   for (const expected of [
     "Name=OpenFolks",
