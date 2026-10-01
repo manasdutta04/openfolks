@@ -374,7 +374,10 @@ function verifyCloudflaredResources(resources, label, { directoryMode = 0o755 } 
     requireRegularMode(path.join(licenses, name), 0o644);
     requireContained(licenses, path.join(licenses, name));
   }
-  if (sha256(path.join(licenses, "cloudflared-LICENSE.txt")) !== sha256(path.join(root, "LICENSE"))) {
+  if (
+    sha256(path.join(licenses, "cloudflared-LICENSE.txt")) !==
+    sha256(path.join(root, "third_party", "cloudflared", "LICENSE"))
+  ) {
     fail(`${label} cloudflared license text differs from the reviewed Apache 2.0 text`);
   }
   if (
