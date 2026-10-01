@@ -177,7 +177,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
       >
         {step === 0 && (
           <div className="flex flex-col items-center">
-            <MausAvatar seed="openfolks" size={72} />
+            <MausAvatar seed="clover" mascotShape="clover" size={72} animated />
             <h1 className="mt-4 text-[20px] font-semibold tracking-[-0.02em] text-ink">Welcome to your Desk</h1>
             <p className="mt-1.5 text-center text-[14px] leading-relaxed text-ink-secondary">
               OpenFolks is where Folks do real work on their own computer. First, let’s see which engines are ready on

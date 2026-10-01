@@ -74,7 +74,7 @@
   },
   "dependencies": {
     "@trycua/cua-driver": "0.20.0",
-    "@usespaceui/avatars": "^0.1.4",
+    "bot-avatars": "^0.1.2",
     "clsx": "^2.1.1",
     "lucide-react": "^0.539.0",
     "posthog-js": "^1.415.6",

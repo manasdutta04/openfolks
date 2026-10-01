@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
-import { Avatar } from "@usespaceui/avatars/react";
-import { avatarSeedFor, PEBBLE_VARIANT } from "../../../shared/pebble-avatars";
+import {
+  BotAvatar as LibraryBotAvatar,
+  type BotAvatarState,
+  type BotAvatarType,
+} from "bot-avatars";
+import {
+  animationSeedFor,
+  avatarSeedFor,
+  avatarTypeFor,
+} from "../../../shared/pebble-avatars";
 import { botAvatarProfile, type BotAvatarCrop } from "../../../shared/bot-avatar";
-import type { MausColor } from "@/lib/mascot";
+import { MAUS_COLORS, type MausColor } from "@/lib/mascot";
 
 export type MausAvatarProps = {
   seed?: string;
@@ -10,7 +18,7 @@ export type MausAvatarProps = {
   label?: string;
   animated?: boolean;
   circle?: boolean;
-  /** Kept so existing call sites compile; pebble generates its own palette. */
+  /** Optional body colour override (folk chrome colour). */
   color?: MausColor;
   state?: string;
   expression?: number;
@@ -26,24 +34,61 @@ export type MausAvatarProps = {
   forward?: boolean;
   lookAround?: number;
   trackPointer?: boolean;
+  interactive?: boolean;
 };
 
-/** Pebble avatar from a deterministic seed. Same seed always looks the same. */
+function mapState(state?: string): BotAvatarState {
+  if (state === "working") return "working";
+  if (state === "sleeping") return "sleeping";
+  return "default";
+}
+
+/** Animated bot-avatars shape from a deterministic seed / type. */
 export function MausAvatar({
   seed = "folk",
   size = 44,
   label,
   animated = false,
-  circle = true,
+  color,
+  state,
+  mascotShape,
+  turn,
+  showMouth,
+  interactive = false,
 }: MausAvatarProps) {
+  const type = avatarTypeFor({ avatarSeed: seed, mascotShape }) as BotAvatarType;
+  const libraryState = mapState(state);
+  const face = showMouth || libraryState === "working" ? "mouth" : "eyes";
+  const bodyColor = color ? MAUS_COLORS[color] : undefined;
+  const isWorking = libraryState === "working";
+
   return (
-    <span className="inline-flex shrink-0" title={label} aria-label={label}>
-      <Avatar
-        name={seed}
-        variant={PEBBLE_VARIANT}
+    <span
+      className="inline-flex shrink-0 items-center justify-center overflow-visible"
+      title={label}
+      aria-label={label}
+      style={{ width: size, height: size }}
+    >
+      <LibraryBotAvatar
+        type={type}
+        state={libraryState}
+        face={face}
         size={size}
-        circle={circle}
-        animate={animated}
+        seed={animationSeedFor(seed)}
+        color={bodyColor}
+        paused={!animated}
+        // Softer motion so idle rows and the picker don't feel twitchy.
+        speed={animated ? (isWorking ? 0.92 : 0.78) : 1}
+        turn={turn ?? (animated ? 0.65 : 0)}
+        jumpEvery={animated ? (isWorking ? 4.5 : 11) : 0}
+        jumpHeight={isWorking ? 18 : 14}
+        jumpSpin={isWorking ? 0.85 : 0.55}
+        jumpLean={isWorking ? 4 : 3}
+        jumpStretch={0.7}
+        jumpSquash={0.9}
+        whirl={isWorking ? 0.55 : 0}
+        interactive={interactive}
+        shading="plastic"
       />
     </span>
   );
@@ -62,8 +107,8 @@ export type BotAvatarProps = Omit<MausAvatarProps, "seed"> & {
 };
 
 /**
- * Folk profile image when one is set; otherwise a unique Pebble avatar.
- * A broken custom image falls back to Pebble so the row never shows a hole.
+ * Folk profile image when one is set; otherwise a bot-avatars shape.
+ * A broken custom image falls back to the shape so the row never shows a hole.
  */
 export function BotAvatar({ bot, size = 44, label, animated = false, ...rest }: BotAvatarProps) {
   const profile = botAvatarProfile(bot);
@@ -76,6 +121,8 @@ export function BotAvatar({ bot, size = 44, label, animated = false, ...rest }: 
       <MausAvatar
         {...rest}
         seed={avatarSeedFor(bot)}
+        mascotShape={bot.mascotShape ?? bot.avatarSeed}
+        color={bot.color}
         size={size}
         label={label ?? bot.name}
         animated={animated}

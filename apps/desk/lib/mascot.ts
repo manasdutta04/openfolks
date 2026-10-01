@@ -44,9 +44,11 @@ export const MAUS_MOTIONS = [
 
 export type MausMotion = "none" | (typeof MAUS_MOTIONS)[number];
 
-export type MausState = "idle" | "working" | "happy";
+/** Desk-facing states; Avatar maps these onto bot-avatars default/working/sleeping. */
+export type MausState = "idle" | "working" | "happy" | "sleeping";
 
-export function normalizeState(_value: string | null | undefined): MausState | null {
+export function normalizeState(value: string | null | undefined): MausState | null {
+  if (value === "working" || value === "idle" || value === "happy" || value === "sleeping") return value;
   return null;
 }
 

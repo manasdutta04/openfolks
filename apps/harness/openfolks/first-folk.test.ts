@@ -14,7 +14,7 @@ describe("createFirstFolk", () => {
     rmSync(DATA_DIR, { recursive: true, force: true });
   });
 
-  it("creates a single Assistant folk with an auto-assigned pebble avatar", () => {
+  it("creates a single Assistant folk with an auto-assigned bot avatar shape", () => {
     const store = new Store(selection);
     const bot = createFirstFolk(store, selection());
     expect(bot.name).toBe(FIRST_FOLK_NAME);
@@ -24,12 +24,12 @@ describe("createFirstFolk", () => {
   });
 });
 
-describe("createBot pebble variety", () => {
+describe("createBot avatar variety", () => {
   beforeEach(() => {
     rmSync(DATA_DIR, { recursive: true, force: true });
   });
 
-  it("assigns distinct colors and pebble seeds across new folks when possible", () => {
+  it("assigns distinct colors and avatar shapes across new folks when possible", () => {
     const store = new Store(selection);
     const bots = Array.from({ length: 5 }, () => store.createBot({}, { seedMessages: false }));
     const colors = new Set(bots.map((b) => b.color));
@@ -40,11 +40,11 @@ describe("createBot pebble variety", () => {
 });
 
 describe("pickPebbleSeed", () => {
-  it("prefers unused catalog names before minting extras", () => {
-    expect(pickPebbleSeed(["orion", "sirius"], 0)).not.toBe("orion");
-    expect(pickPebbleSeed(["orion", "sirius"], 0)).not.toBe("sirius");
+  it("prefers unused catalog shapes before minting extras", () => {
+    expect(pickPebbleSeed(["clover", "flower"], 0)).not.toBe("clover");
+    expect(pickPebbleSeed(["clover", "flower"], 0)).not.toBe("flower");
     expect(PEBBLE_SEEDS).toContain(pickPebbleSeed([], 0));
     const exhausted = pickPebbleSeed(PEBBLE_SEEDS, 0);
-    expect(exhausted.startsWith("pebble-")).toBe(true);
+    expect(exhausted.startsWith("shape-")).toBe(true);
   });
 });
