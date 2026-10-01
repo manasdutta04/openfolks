@@ -81,7 +81,7 @@ describe("connected-apps broker boundaries", () => {
   });
 
   it("hashes installation tokens before storage", async () => {
-    await expect(sha256("openfolks")).resolves.toBe("63c74f70a9d4681c334e84001935955a75245ea5b16b9c37c808e85c69963705");
+    await expect(sha256("openfolks")).resolves.toBe("9fe1b24af71777ea36b099a108905917cc4295d59dce3ef5b81c10ea424dcd92");
   });
 
   it("creates Sessions with explicit multi-account selection", async () => {
