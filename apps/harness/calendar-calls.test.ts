@@ -141,7 +141,7 @@ describe("CalendarCallManager", () => {
 
   it("validates participants, schedules, duration, and attachments", () => {
     const calls = manager();
-    expect(() => calls.create(input({ botIds: [] }))).toThrow(/at least one bot/i);
+    expect(() => calls.create(input({ botIds: [] }))).toThrow(/at least one folk/i);
     expect(() => calls.create(input({ botIds: ["missing"] }))).toThrow(/no longer exist/i);
     expect(() => calls.create(input({ durationMinutes: 10 }))).toThrow(/15 and 240/);
     expect(() => calls.create(input({

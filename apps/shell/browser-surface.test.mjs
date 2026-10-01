@@ -352,7 +352,7 @@ describe("browser surface manager", () => {
 
     manager.layout("folk-a", null);
     expect(views[0].visible).toBe(false);
-    expect(() => manager.layout("../bad", BOUNDS)).toThrow(/bot id/);
+    expect(() => manager.layout("../bad", BOUNDS)).toThrow(/folk id/i);
   });
 
   it("scales the same fixed desktop viewport to fit compact and expanded boxes", () => {
@@ -671,7 +671,7 @@ describe("browser surface manager", () => {
   it("forgets a Guest session the moment the folk switches off it", async () => {
     const { manager, views } = harness();
     manager.layout("folk-a", BOUNDS, GUEST_PROFILE, "compact");
-    expect(views[0].partition).toMatch(/^openfolks-browser-guest-bot-a-\d+$/);
+    expect(views[0].partition).toMatch(/^openfolks-browser-guest-folk-a-\d+$/);
     expect(views[0].partition.startsWith("persist:")).toBe(false);
     await manager.navigate("folk-a", "https://secret.example");
     manager.layout("folk-a", BOUNDS, "", "compact");

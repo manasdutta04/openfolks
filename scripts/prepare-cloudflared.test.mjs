@@ -92,7 +92,7 @@ describe("pinned cloudflared packaging", () => {
 
   it("stages the current target for development without narrowing package preparation", () => {
     expect(packageJson.scripts["dev:desktop"]).toBe(
-      "node scripts/prepare-cloudflared.mjs --current && electron .",
+      "node scripts/prepare-cloudflared.mjs --current && node scripts/launch-desktop.mjs",
     );
     expect(packageJson.scripts["build:cloudflared"]).toBe(
       "node scripts/prepare-cloudflared.mjs",

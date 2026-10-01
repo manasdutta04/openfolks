@@ -21,6 +21,7 @@ import { FILE_MAX_BYTES, IMAGE_MAX_BYTES } from "./attachments.ts";
 
 const SERVER_DIR = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(SERVER_DIR, "..");
+const REPO_ROOT = join(SERVER_DIR, "..", "..");
 const FAKE_CLAUDE_CLI = join(SERVER_DIR, "testing", "fake-claude-cli.ts");
 const PORT = 18800 + Math.floor(Math.random() * 10_000);
 const BASE = `http://127.0.0.1:${PORT}`;
@@ -157,6 +158,7 @@ beforeAll(async () => {
         ghost: { driver: "not-a-real-driver", displayName: "Ghost" },
         claude: { driver: "claudeAgent", displayName: "Fixture Claude", config: { cli: FAKE_CLAUDE_CLI } },
       },
+      openfolks: { onboardingComplete: true },
     }),
   );
   writeFileSync(
@@ -333,6 +335,7 @@ beforeAll(async () => {
       OMB_SSE_HEARTBEAT_MS: "50",
       FAKE_CLAUDE_MODE: "hang",
       FAKE_CLAUDE_DUMP: fakeClaudeDump,
+      OMB_SKILLS_DIR: join(REPO_ROOT, "portals"),
     },
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -490,7 +493,7 @@ describe("harness HTTP API", () => {
       for (const memberIds of [[], ["no-such-bot"]]) {
         const attempted = await api("PATCH", `/api/groups/${room.id}`, { memberIds });
         expect(attempted.status).toBe(400);
-        expect(attempted.body.error).toMatch(/at least one bot|unknown room member/i);
+        expect(attempted.body.error).toMatch(/at least one folk|unknown (?:room|channel) member/i);
       }
       const state = (await api("GET", "/api/bots")).body;
       expect(state.groups.find((group: { id: string }) => group.id === room.id).memberIds).toEqual([bot.id]);
@@ -508,7 +511,7 @@ describe("harness HTTP API", () => {
     try {
       const refused = await api("POST", "/api/groups", { name: "All archived", memberIds: [archived.id] });
       expect(refused.status).toBe(400);
-      expect(refused.body.error).toMatch(/at least one active bot/i);
+      expect(refused.body.error).toMatch(/at least one active folk/i);
 
       // one active member is enough — the archived one may still ride along
       const created = await api("POST", "/api/groups", {
@@ -540,12 +543,12 @@ describe("harness HTTP API", () => {
   });
 
   it("keeps direct-message channels a fixed pair at the API boundary", async () => {
-    const attempted = await api("PATCH", "/api/groups/test-dm", { memberIds: ["test-bot-a"] });
+    const attempted = await api("PATCH", "/api/groups/test-dm", { memberIds: ["test-folk-a"] });
     expect(attempted.status).toBe(400);
     expect(attempted.body.error).toMatch(/direct-message.*members/i);
     const state = await api("GET", "/api/bots");
     const dm = state.body.groups.find((group: { id: string }) => group.id === "test-dm");
-    expect(dm.memberIds).toEqual(["test-bot-a", "test-bot-b"]);
+    expect(dm.memberIds).toEqual(["test-folk-a", "test-folk-b"]);
   });
 
   it("hands the lead to a remaining member when the lead leaves the room", async () => {
@@ -3788,7 +3791,7 @@ describe("harness HTTP API", () => {
       expect(blocked.body.error).toMatch(/stop .* turn/i);
       const switched = await api("PATCH", `/api/bots/${bot.id}`, { browserProfile: null });
       expect(switched.status).toBe(409);
-      expect(switched.body.error).toMatch(/stop this bot's turn before changing its browser profile/i);
+      expect(switched.body.error).toMatch(/stop this folk's turn before changing its browser profile/i);
       const state = (await api("GET", "/api/bots")).body;
       expect(state.bots.find((candidate: { id: string }) => candidate.id === bot.id)?.browserProfile).toBe("active");
     } finally {
