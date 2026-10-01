@@ -510,6 +510,7 @@ export function SettingsPanel({ bot }: { bot: Bot }) {
         | "autoStartVps"
         | "color"
         | "avatarSeed"
+        | "mascotShape"
         | "mascotExpression"
         | "avatarUrl"
         | "avatarCrop"
@@ -581,6 +582,7 @@ export function SettingsPanel({ bot }: { bot: Bot }) {
           <BotProfileAvatarCard
             bot={bot}
             onPatch={patch}
+            usedSeeds={state.bots.filter((b) => b.id !== bot.id).map((b) => b.avatarSeed)}
           />
 
           <Field label="Name">
