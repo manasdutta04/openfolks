@@ -75,8 +75,14 @@ const DEV_URL = process.env.ELECTRON_START_URL ?? "http://127.0.0.1:5199";
 const DEFAULT_COMPOSIO_BROKER_URL = "https://openfolks-composio.manasdutta512.workers.dev";
 let SERVER_PORT = 8799;
 // Windows taskbar/window chrome prefers .ico; PNG is fine on macOS/Linux.
+// The packaged .ico must live outside app.asar (extraResources): the Windows
+// shell reads appIconPath itself and cannot open files inside an asar, which
+// leaves the taskbar with a generic blank-window icon.
 const APP_ICON = process.platform === "win32"
-  ? path.join(__dirname, "../../build/icon.ico")
+  ? [
+      path.join(process.resourcesPath ?? "", "icon.ico"),
+      path.join(__dirname, "../../build/icon.ico"),
+    ].find((file) => fs.existsSync(file)) ?? path.join(__dirname, "../../build/icon.ico")
   : path.join(__dirname, "resources/app-icon.png");
 const APP_ICON_FALLBACK = path.join(__dirname, "../../public/openfolk.png");
 const APP_ICON_IMAGE = () => {

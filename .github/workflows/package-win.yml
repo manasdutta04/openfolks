@@ -63,6 +63,7 @@ jobs:
           [ -f "$res/server/index.js" ] || { echo "::error::missing $res/server/index.js"; fail=1; }
           # missing → the server has nothing to serve → black window
           [ -f "$res/ui/index.html" ] || { echo "::error::missing $res/ui/index.html"; fail=1; }
+          [ -f "$res/icon.ico" ] || { echo "::error::missing $res/icon.ico"; fail=1; }
           [ -f "$res/cloudflared/cloudflared.exe" ] || {
             echo "::error::missing $res/cloudflared/cloudflared.exe"; fail=1; }
           [ -f "$res/licenses/cloudflared-LICENSE.txt" ] || {

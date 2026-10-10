@@ -58,6 +58,9 @@ extraResources:
     to: licenses/cloudflared-LICENSE.txt
   - from: third_party/cloudflared/README.md
     to: licenses/cloudflared-README.md
+  # Windows taskbar / window icon: read by the OS shell, so it cannot sit in the asar.
+  - from: build/icon.ico
+    to: icon.ico
   - from: dist
     to: ui
   - from: dist-server

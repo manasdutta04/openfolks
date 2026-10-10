@@ -104,6 +104,7 @@ jobs:
           res=release/win-unpacked/resources
           [ -f "$res/server/index.js" ] || { echo "::error::missing server/index.js"; exit 1; }
           [ -f "$res/ui/index.html" ] || { echo "::error::missing ui/index.html"; exit 1; }
+          [ -f "$res/icon.ico" ] || { echo "::error::missing icon.ico"; exit 1; }
           [ -f "$res/cloudflared/cloudflared.exe" ] || { echo "::error::missing cloudflared.exe"; exit 1; }
           [ -f "$res/licenses/cloudflared-LICENSE.txt" ] || { echo "::error::missing cloudflared license"; exit 1; }
           [ -f "$res/app-update.yml" ] || { echo "::error::missing app-update.yml"; exit 1; }
