@@ -10,10 +10,14 @@ Each link is the latest published build.
 
 | Platform | Package | Notes |
 |---|---|---|
-| macOS Apple silicon | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg) | Signed and notarized. Drag to Applications. |
-| macOS Intel | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg) | Signed and notarized. |
-| Windows x64 | [Installer](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe) | Per-user. Windows signing is not available yet. |
+| macOS Apple silicon | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg) | Unsigned. Drag to Applications, then clear quarantine (below). |
+| macOS Intel | [`.dmg`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg) | Unsigned. Clear quarantine (below). |
+| Windows x64 | [Installer](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe) | Per-user. Unsigned; SmartScreen will warn. |
 | Ubuntu 24.04 x64 | [`.deb`](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-amd64.deb) · [AppImage](http://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.AppImage) | Prefer the `.deb`. The AppImage is portable. |
+
+<Callout type="warn" title="macOS Gatekeeper">
+  OpenFolks is not signed with an Apple Developer ID, so macOS may say the app is damaged or from an unidentified developer. After dragging it to Applications, run `xattr -cr /Applications/OpenFolks.app`, or right-click the app → **Open** → **Open**.
+</Callout>
 
 <Callout type="warn" title="Windows SmartScreen">
   The Windows installer is not code-signed yet. Windows may show “Unknown publisher.” Confirm the file came from the official OpenFolks releases repository, then **More info → Run anyway**.
