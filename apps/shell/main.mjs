@@ -1139,11 +1139,10 @@ function createWindow() {
     // on the window until setIcon runs with a real .ico.
     const icon = APP_ICON_IMAGE();
     if (icon) win.setIcon(icon);
-    win.setAppDetails({
-      appId: "com.openfolks.app",
-      appIconPath: fs.existsSync(APP_ICON) ? APP_ICON : APP_ICON_FALLBACK,
-      relaunchDisplayName: "OpenFolks",
-    });
+    // Deliberately no win.setAppDetails(): Windows treats RelaunchIconResource /
+    // RelaunchDisplayName as a set that needs a RelaunchCommand too. With only
+    // part of it, the taskbar drops the window icon for a generic blank one.
+    // The AppUserModelID above plus the window icon is all the taskbar needs.
   }
   void startBrowserSurface(win);
   if (waitsForSkinSync) {
