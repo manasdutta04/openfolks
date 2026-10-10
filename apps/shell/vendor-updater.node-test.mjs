@@ -21,9 +21,9 @@ import { basename, dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { patchAppImageUpdater } from "../scripts/patch-appimage-updater.mjs";
+import { patchAppImageUpdater } from "../../scripts/patch-appimage-updater.mjs";
 
-const root = join(dirname(fileURLToPath(import.meta.url)), "..");
+const root = dirname(fileURLToPath(import.meta.url));
 const bundle = readFileSync(join(root, "vendor/electron-updater.cjs"), "utf8");
 
 // Non-global on purpose: a shared /g regex carries lastIndex between .test()

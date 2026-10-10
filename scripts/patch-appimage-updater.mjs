@@ -10,7 +10,7 @@
 // path the user already launches, whatever they named it.
 //
 // Applied to the generated bundle by scripts/bundle-updater.mjs, and asserted
-// on the committed artifact by electron/vendor-updater.node-test.mjs.
+// on the committed artifact by apps/shell/vendor-updater.node-test.mjs.
 
 // esbuild renames the imported `path` module per build (path2, path3, …), so
 // match the identifier instead of pinning one. The back-reference keeps this
