@@ -288,6 +288,12 @@ jobs:
           if (bad) process.exit(1);
           console.log(`all feeds verified; ${readdirSync(".").length} assets staged`);
           EOF
+      - name: Checksums for every download
+        run: |
+          cd assets
+          rm -f SHA256SUMS*.txt
+          sha256sum *.exe *.dmg *.deb *.AppImage > SHA256SUMS.txt
+          cat SHA256SUMS.txt
       - name: Create or update the release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -319,6 +325,13 @@ jobs:
 
           ### Windows — SmartScreen
           SmartScreen may say the publisher is unknown. Choose **More info** → **Run anyway**.
+
+          ### Verify your download
+          Builds are unsigned, so compare the file against \`SHA256SUMS.txt\` on this release:
+          \`sha256sum -c SHA256SUMS.txt --ignore-missing\` (macOS/Linux) or \`Get-FileHash <file>\` (Windows).
+
+          ### Linux
+          Prefer the \`.deb\` (\`sudo apt install ./OpenFolks-amd64.deb\`). The AppImage is portable: \`chmod +x OpenFolks.AppImage\`.
 
           Built from \`${SHA}\`.
           EOF
