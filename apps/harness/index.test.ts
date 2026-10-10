@@ -5246,7 +5246,9 @@ describe("resumable event stream", () => {
     const first = await openSse(`${BASE}/api/events`);
     const hello = await first.until((f) => f.kind === "hello");
     await nudge(botId);
-    const seen = await first.until((f) => f.kind === "bot");
+    // match our own frame: background broadcasts (seeding, routines) can
+    // land first, especially on slow Windows runners
+    const seen = await first.until((f) => f.kind === "bot" && f.bot?.id === botId);
     first.close();
     // a real client advances its cursor as frames arrive — resume from the
     // last frame it actually saw, not from where it connected
@@ -5262,9 +5264,14 @@ describe("resumable event stream", () => {
       // ...and an old cursor still replays them, in order, without a hydrate
       const back = await resumed.until((f) => f.kind === "hello");
       expect(back.resumed).toBe(true);
-      await resumed.until((f) => f.kind === "bot" && f.seq === seen.seq + 3);
-      const replayed = resumed.frames.filter((f) => f.kind === "bot").map((f) => f.seq);
-      expect(replayed).toEqual([seen.seq + 1, seen.seq + 2, seen.seq + 3]);
+      await resumed.until(
+        () => resumed.frames.filter((f) => f.kind === "bot" && f.bot?.id === botId).length >= 3,
+      );
+      // every numbered frame since the cursor, gap-free and in order — other
+      // broadcasts may interleave with our three, but nothing may be skipped
+      const replayed = resumed.frames.filter((f) => f.seq !== undefined).map((f) => f.seq);
+      expect(replayed[0]).toBe(seen.seq + 1);
+      replayed.forEach((seq, i) => expect(seq).toBe(seen.seq + 1 + i));
     } finally {
       resumed.close();
     }
