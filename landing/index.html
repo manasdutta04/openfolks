@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenFolks — AI teammates that finish the work</title>
+  <meta name="description" content="OpenFolks is a local-first, open-source desktop workplace for AI teammates. Hire folks, give them engines, folders and computers, and run the whole team from one Desk." />
+  <meta name="theme-color" content="#0b0b0e" />
+  <link rel="icon" href="assets/logo.png" type="image/png" />
+  <meta property="og:title" content="OpenFolks — AI teammates that finish the work" />
+  <meta property="og:description" content="A local-first desktop workplace for AI teammates. Free, MIT-licensed, for Windows, macOS and Linux." />
+  <meta property="og:image" content="assets/icon-512.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- The OpenFolks mark: a leaning blob with two slanted eyes -->
+      <symbol id="mark" viewBox="0 0 100 100">
+        <path d="M3 58C14 40 46 20 70 18c14-1 21 9 18 26-3 18-11 40-18 56H11C4 100 0 70 3 58Z" fill="currentColor" />
+        <rect x="42" y="47" width="11" height="22" rx="5.5" transform="rotate(-14 47.5 58)" fill="#0b0b0e" />
+        <rect x="64" y="42" width="11" height="22" rx="5.5" transform="rotate(-14 69.5 53)" fill="#0b0b0e" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <header class="nav" id="top">
+    <a class="brand" href="#top" aria-label="OpenFolks home">
+      <img src="assets/logo.png" alt="" width="28" height="28" />
+      <span>OpenFolks</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work">Product</a>
+      <a href="#crews">Crews</a>
+      <a href="#local">Local-first</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/manasdutta04/openfolks" rel="noopener">GitHub</a>
+    </nav>
+    <a class="btn btn-light btn-sm" href="#download">Download</a>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <a class="pill" href="https://github.com/manasdutta04/openfolks/releases/latest" rel="noopener">
+        <span class="dot"></span> OpenFolks 1.0 is here <span class="muted">· Read the release notes</span>
+      </a>
+      <h1>Meet <svg class="mark-inline" role="img" aria-label="OpenFolks mark"><use href="#mark" /></svg> OpenFolks</h1>
+      <p class="lede">AI teammates you can give real work to. Hire folks, give them a model, a folder and a computer, and run the whole team from one Desk — on your machine, under your control.</p>
+      <div class="cta">
+        <a class="btn btn-light btn-lg" href="#download" data-download><span data-os-label>Download</span></a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/manasdutta04/openfolks" rel="noopener">Star on GitHub</a>
+      </div>
+      <p class="fine">Free &amp; open source · MIT · Windows, macOS and Linux</p>
+
+      <div class="desk" aria-label="Illustration of the OpenFolks Desk">
+        <div class="desk-bar">
+          <span class="tl r"></span><span class="tl y"></span><span class="tl g"></span>
+          <span class="desk-title">OpenFolks</span>
+        </div>
+        <div class="desk-body">
+          <aside class="desk-side">
+            <div class="search">Search</div>
+            <ul class="folk-list">
+              <li><i style="--c:#4ec99a"></i><div><b>Chief</b><small>booked the venue and sent the confirmation around.</small></div><time>Yesterday</time></li>
+              <li class="active"><i style="--c:#f0a14e"></i><div><b>New folk</b><small>Typing…</small></div><time>7:05 PM</time></li>
+              <li><i style="--c:#9b8fd9"></i><div><b>Inbox</b><small>sent. inbox at zero, 5 drafts parked for tomorrow.</small></div><time>4:05 PM</time></li>
+              <li><i style="--c:#62a8ee"></i><div><b>Scout</b><small>3 intros drafted in your voice, held for your ok.</small></div><time>11:05 AM</time></li>
+              <li><i style="--c:#e8738a"></i><div><b>Tracker</b><small>report filed. 9 receipts, nothing outstanding.</small></div><time>3:05 PM</time></li>
+              <li><i style="--c:#d4b35c"></i><div><b>Dev Crew</b><small>that leaves the pipeline. spin up a dedicated folk.</small></div><time>1:05 PM</time></li>
+            </ul>
+          </aside>
+          <section class="desk-chat">
+            <div class="chat-head"><i style="--c:#f0a14e"></i> New folk <span class="chip">Local VM</span></div>
+            <div class="msgs" id="typed"></div>
+            <div class="composer">Message folks like teammates</div>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="feature" id="work">
+      <div class="copy reveal">
+        <h2>Message folks like teammates</h2>
+        <p>Give tasks to folks the way you would to a colleague. They take a project from start to finish, keep context on how you work, and come back when they need your approval.</p>
+        <ul class="ticks">
+          <li>Streaming replies with live tool activity</li>
+          <li>Queue or steer a folk that is already mid-task</li>
+          <li>Edit, branch, rewind, pin and export any conversation</li>
+        </ul>
+      </div>
+      <div class="visual reveal">
+        <div class="stack">
+          <div class="card"><span class="who" style="--c:#62a8ee">Research</span> map the competitors, 12 sources <em>working</em></div>
+          <div class="card"><span class="who" style="--c:#4ec99a">Builder</span> fix the failing checkout test <em>working</em></div>
+          <div class="card"><span class="who" style="--c:#9b8fd9">Outreach</span> draft 20 intros in my voice <em>working</em></div>
+          <div class="card"><span class="who" style="--c:#d4b35c">Reports</span> weekly summary is ready <em class="ok">needs you</em></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature flip">
+      <div class="copy reveal">
+        <h2>Work with many folks at once</h2>
+        <p>Hire a folk, give it a job, then add another when the work grows — one on a project, one on outreach, one on systems. They work in parallel and keep going while you do something else.</p>
+        <ul class="ticks">
+          <li>One folk per role, model, voice and working folder</li>
+          <li>Rooms for shared briefs and folk-to-folk handoffs</li>
+          <li>Per-task token and cost visibility</li>
+        </ul>
+      </div>
+      <div class="visual reveal">
+        <div class="avatars">
+          <span style="--c:#4ec99a"></span><span style="--c:#f0a14e"></span><span style="--c:#9b8fd9"></span>
+          <span style="--c:#62a8ee"></span><span style="--c:#e8738a"></span><span style="--c:#d4b35c"></span>
+        </div>
+        <p class="caption">Your team, one Desk.</p>
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="copy reveal">
+        <h2>Folks work where you work</h2>
+        <p>Every folk gets a computer destination. Run on this computer, in an isolated Local VM through Docker or Podman, or on a cloud desktop — then watch, or take over, right from the Desk.</p>
+        <ul class="ticks">
+          <li>Local computer control is explicit opt-in</li>
+          <li>Live previews with in-app takeover</li>
+          <li>Connected apps through Composio and your own MCP tools</li>
+        </ul>
+      </div>
+      <div class="visual reveal">
+        <div class="computers">
+          <div class="pc on"><b>This computer</b><small>Opt-in control</small></div>
+          <div class="pc"><b>Local VM</b><small>Docker / Podman</small></div>
+          <div class="pc"><b>Cloud desktop</b><small>Hosted or your VPS</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature flip">
+      <div class="copy reveal">
+        <h2>Routines that run on their own</h2>
+        <p>Set a task to run once, every weekday, or when a webhook fires. Each run starts with fresh context, leaves a durable receipt, and pings you only when something needs a human.</p>
+        <ul class="ticks">
+          <li>One-time and weekday schedules</li>
+          <li>Webhook triggers with dedicated secret endpoints</li>
+          <li>Notifications when it needs you</li>
+        </ul>
+      </div>
+      <div class="visual reveal">
+        <div class="routine">
+          <div class="r-head"><span class="rec"></span> Weekly Reporting <small>every weekday · 9:00</small></div>
+          <div class="r-row ok">Mon <span>ran · receipt saved</span></div>
+          <div class="r-row ok">Tue <span>ran · receipt saved</span></div>
+          <div class="r-row ok">Wed <span>ran · receipt saved</span></div>
+          <div class="r-row next">Thu <span>scheduled</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature">
+      <div class="copy reveal">
+        <h2>Folks get smarter over time</h2>
+        <p>Folks keep readable, editable memory. Tell one how you like things once and it remembers — you can open the notes, correct them, or wipe them any time.</p>
+      </div>
+      <div class="visual reveal">
+        <div class="memory">
+          <p>Acme replied on pricing, same thread as last quarter. I already had the context, so I answered without waiting on you.</p>
+          <p class="note"><b>Noted for next time:</b> they only sign annual, and Dana approves.</p>
+          <small>Updated memory for <span class="who" style="--c:#9b8fd9">Inbox</span></small>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature flip">
+      <div class="copy reveal">
+        <h2>Connect the folks</h2>
+        <p>Put a few folks in the same thread and they pass work between themselves. You watch them take action instead of approving every step.</p>
+      </div>
+      <div class="visual reveal">
+        <div class="handoff" id="handoff">
+          <span class="h on" style="--c:#62a8ee">Asking Research…</span>
+          <span class="h" style="--c:#e8738a">Looping in Comms…</span>
+          <span class="h" style="--c:#4ec99a">Sending to Chief…</span>
+          <span class="h" style="--c:#d4b35c">Pinging Travel…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREWS -->
+    <section class="crews" id="crews">
+      <h2 class="center reveal">Hire a whole crew in one click</h2>
+      <p class="center sub reveal">Crews are ready-made teams from the Marketplace. Install one, point it at a folder, and everyone shares the same workspace.</p>
+      <div class="tabs reveal" role="tablist" id="crew-tabs">
+        <button role="tab" aria-selected="true" data-crew="dev">Dev Crew</button>
+        <button role="tab" aria-selected="false" data-crew="job">Job Search</button>
+        <button role="tab" aria-selected="false" data-crew="sales">Sales Pipeline</button>
+        <button role="tab" aria-selected="false" data-crew="research">Research Desk</button>
+        <button role="tab" aria-selected="false" data-crew="content">Content Studio</button>
+      </div>
+      <div class="crew-panel reveal" id="crew-panel" aria-live="polite"></div>
+    </section>
+
+    <!-- LOCAL FIRST -->
+    <section class="local" id="local">
+      <h2 class="center reveal">Yours. On your machine.</h2>
+      <div class="grid3">
+        <article class="tile reveal"><h3>Local-first</h3><p>Your conversations, keys and files stay on your computer unless you send them out through an engine or a connected app.</p></article>
+        <article class="tile reveal"><h3>Bring your engines</h3><p>OpenFolks launches the agent CLIs you already use — Claude, Codex and more — and turns each into one consistent event stream.</p></article>
+        <article class="tile reveal"><h3>Open source, MIT</h3><p>Read it, fork it, fix it. No vendor lock on your folks, and everything lives in a folder you own.</p></article>
+      </div>
+    </section>
+
+    <!-- DOWNLOAD -->
+    <section class="download" id="download">
+      <h2 class="center reveal">Download OpenFolks</h2>
+      <p class="center sub reveal">One team, on your desktop.</p>
+      <div class="grid3 dl">
+        <div class="dl-card reveal" data-os="windows">
+          <b>Windows</b><small>Windows 10 &amp; 11 · x64</small>
+          <span class="two"><a class="btn btn-light" href="https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe">Download .exe</a></span>
+        </div>
+        <div class="dl-card reveal" data-os="mac">
+          <b>macOS</b><small>Apple silicon &amp; Intel</small>
+          <span class="two">
+            <a class="btn btn-light" href="https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg">Apple silicon</a>
+            <a class="btn btn-ghost" href="https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg">Intel</a>
+          </span>
+        </div>
+        <div class="dl-card reveal" data-os="linux">
+          <b>Linux</b><small>Ubuntu 24.04 · x64</small>
+          <span class="two">
+            <a class="btn btn-light" href="https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-amd64.deb">.deb</a>
+            <a class="btn btn-ghost" href="https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.AppImage">AppImage</a>
+          </span>
+        </div>
+      </div>
+
+      <div class="unsigned reveal">
+        <h3>First launch on an unsigned build</h3>
+        <p>OpenFolks is free and open source, so the installers are not signed with a paid Apple or Microsoft certificate. Your OS will warn you once. If you like, check the file against <a href="https://github.com/manasdutta04/openfolks/releases/latest" rel="noopener">SHA256SUMS.txt</a> on the release, then:</p>
+        <div class="steps">
+          <div><b>Windows</b><p>SmartScreen → <em>More info</em> → <em>Run anyway</em>.</p></div>
+          <div><b>macOS</b><p>Drag to Applications, then run this once — or right-click the app → Open → Open.</p>
+            <div class="code"><code>xattr -cr /Applications/OpenFolks.app</code><button type="button" data-copy="xattr -cr /Applications/OpenFolks.app">Copy</button></div></div>
+          <div><b>Linux</b><p>The .deb is the easiest route:</p>
+            <div class="code"><code>sudo apt install ./OpenFolks-amd64.deb</code><button type="button" data-copy="sudo apt install ./OpenFolks-amd64.deb">Copy</button></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="faq" id="faq">
+      <h2 class="center reveal">FAQs</h2>
+      <div class="faq-list reveal">
+        <details><summary>How is OpenFolks different from an AI chat assistant?</summary><p>Folks have a role, memory and a computer to work on. They use tools, run in parallel and can be put on routines — so you hand off work instead of copy-pasting prompts.</p></details>
+        <details><summary>Is it really free?</summary><p>Yes. OpenFolks is MIT-licensed. You bring the engines or API access you already have; any usage is billed by those providers, not by OpenFolks.</p></details>
+        <details><summary>Where does my data live?</summary><p>On your machine, in <code>~/.openfolks</code> (override with <code>OPENFOLKS_DATA_DIR</code>). Content only leaves when you send it through an engine or a connected app.</p></details>
+        <details><summary>Can a folk control my computer?</summary><p>Only if you opt in, on supported hosts. You can also run folks in an isolated Local VM or a cloud desktop instead.</p></details>
+        <details><summary>Why does my OS warn me when I install it?</summary><p>The installers are unsigned — a trade-off of shipping free open-source software without paid signing certificates. The steps above clear it in a few seconds.</p></details>
+        <details><summary>Which platforms are supported?</summary><p>Windows 10/11 (x64), macOS (Apple silicon and Intel) and Ubuntu 24.04 (x64). There is no mobile app.</p></details>
+      </div>
+    </section>
+
+    <section class="final">
+      <img src="assets/logo.png" alt="" width="72" height="72" />
+      <h2>Meet your first folk</h2>
+      <p>An AI teammate you can trust to get work done.</p>
+      <div class="cta">
+        <a class="btn btn-light btn-lg" href="#download">Get started for free</a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/manasdutta04/openfolks" rel="noopener">View the source</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="brand"><img src="assets/logo.png" alt="" width="22" height="22" /><span>OpenFolks</span></div>
+    <nav aria-label="Footer">
+      <a href="https://github.com/manasdutta04/openfolks" rel="noopener">GitHub</a>
+      <a href="https://github.com/manasdutta04/openfolks/releases" rel="noopener">Releases</a>
+      <a href="https://github.com/manasdutta04/openfolks/blob/main/LICENSE" rel="noopener">MIT License</a>
+      <a href="https://github.com/manasdutta04/openfolks/blob/main/CODE_OF_CONDUCT.md" rel="noopener">Code of Conduct</a>
+    </nav>
+    <small>© OpenFolks contributors. Free and open source.</small>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
