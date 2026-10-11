@@ -92,6 +92,81 @@ const FALLBACK_PREVIEW: Partial<Record<FolkId, string>> = {
   dev: 'Ready when you are.',
 };
 
+const MODELS = [
+  { name: 'Local model', note: 'Runs on this computer' },
+  { name: 'Claude', note: 'Uses your own sign-in' },
+  { name: 'Codex', note: 'Uses your own sign-in' },
+  { name: 'Custom API', note: 'Any OpenAI-compatible endpoint' },
+];
+
+function ComputerPanel({ folk, busy }: { folk: string; busy: boolean }) {
+  const [secs, setSecs] = useState(0);
+  const [takeover, setTakeover] = useState(false);
+  useEffect(() => {
+    const t = setInterval(() => setSecs((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const mm = String(Math.floor(secs / 60)).padStart(2, '0');
+  const ss = String(secs % 60).padStart(2, '0');
+  return (
+    <div className="cp">
+      <header><b>Computer</b><span className="live"><i /> Running</span></header>
+      <div className="cp-meta"><span>Local VM</span><span>Up {mm}:{ss}</span></div>
+      <div className={`screen2 ${takeover ? 'mine' : ''}`} aria-label="Live view of the folk computer">
+        <div className="win-bar"><i /><i /><i /><span>support.example.com</span></div>
+        <div className="win-body">
+          <div className="sk w60" /><div className="sk w90" /><div className="sk w75" />
+          <div className="sk-row"><div className="sk box" /><div className="sk box" /></div>
+          <div className="sk w40" />
+          <span className="ptr" />
+        </div>
+      </div>
+      <p className="cp-task">
+        {takeover ? 'You are in control. The folk is paused.' : busy ? `${folk} is working in this computer.` : `${folk} is idle. The computer stays on.`}
+      </p>
+      <div className="cp-actions">
+        <button className="btn light sm" onClick={() => setTakeover((v) => !v)}>{takeover ? 'Hand back' : 'Take over'}</button>
+        <button className="btn dark sm" tabIndex={-1}>Restart</button>
+      </div>
+    </div>
+  );
+}
+
+const TAPE: Record<string, string[]> = {
+  assistant: ['turn.start', 'tool.call create_folk name=Coach', 'tool.result ok', 'tool.call create_folk name=Vision', 'tool.result ok', 'delegate Coach: draft starter plan', 'delegate Vision: draft starter routine', 'turn.end 16s'],
+  coach: ['turn.start', 'tool.call read plan.md', 'tool.result 0 files', 'message.stream 3 sections', 'turn.end 9s'],
+  vision: ['turn.start', 'tool.call routine.create "Eye break reminders"', 'tool.result id=rt_1', 'message.final', 'turn.end 4s'],
+  inbox: ['turn.start', 'tool.call gmail.list unread', 'tool.result 14 threads', 'approval.request gmail.send (9 drafts)', 'approval.granted', 'tool.call gmail.send x9', 'turn.end 41s'],
+  dev: ['turn.start', 'tool.call shell: pnpm test checkout', 'tool.result 1 failed', 'tool.call edit cart.fixture.ts', 'tool.call shell: pnpm test checkout x3', 'tool.result 3 passed', 'turn.end 58s'],
+};
+
+function BackstagePanel({ folk, active, busy }: { folk: string; active: string; busy: boolean }) {
+  const lines = TAPE[active] ?? TAPE.assistant!;
+  const [n, setN] = useState(1);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => setN(1), [active]);
+  useEffect(() => {
+    const t = setInterval(() => setN((v) => (v >= lines.length ? 1 : v + 1)), 1100);
+    return () => clearInterval(t);
+  }, [lines]);
+  useEffect(() => {
+    const el = box.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [n]);
+  return (
+    <div className="cp">
+      <header><b>Backstage</b><span className="live"><i /> {busy ? 'Live' : 'Replay'}</span></header>
+      <div className="cp-meta"><span>{folk}</span><span>turn tape</span></div>
+      <div className="tape" ref={box}>
+        {lines.slice(0, n).map((l, i) => (
+          <div key={i} className={l.startsWith('approval') ? 'ev warn' : 'ev'}><time>{String(i * 2).padStart(2, '0')}s</time><code>{l}</code></div>
+        ))}
+      </div>
+      <p className="cp-task">Backstage lists every tool call, approval and error for the open thread.</p>
+    </div>
+  );
+}
+
 export function DeskDemo() {
   const [active, setActive] = useState<FolkId>('assistant');
   const [shown, setShown] = useState<Shown>(() => {
@@ -102,6 +177,18 @@ export function DeskDemo() {
   const [busy, setBusy] = useState<FolkId | null>(null);
   const [typing, setTyping] = useState<FolkId | null>(null);
   const [draft, setDraft] = useState('');
+  const [panel, setPanel] = useState<'computer' | 'backstage' | null>(null);
+  const [model, setModel] = useState(MODELS[0]!.name);
+  const [modelOpen, setModelOpen] = useState(false);
+  const modelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!modelOpen) return;
+    const away = (e: PointerEvent) => {
+      if (!modelRef.current?.contains(e.target as Node)) setModelOpen(false);
+    };
+    addEventListener('pointerdown', away);
+    return () => removeEventListener('pointerdown', away);
+  }, [modelOpen]);
   const played = useRef(new Set<FolkId>());
   const scroller = useRef<HTMLDivElement>(null);
   const alive = useRef(true);
@@ -209,14 +296,10 @@ export function DeskDemo() {
   return (
     <div className="desk" ref={root}>
       <div className="desk-bar">
-        <img src="/openfolk.png" alt="" width={18} height={18} />
+        <span className="tl r" /><span className="tl y" /><span className="tl g" />
         <b>OpenFolks</b>
-        <nav aria-hidden="true">
-          {['File', 'Edit', 'View', 'Go', 'Folks', 'Window', 'Help'].map((m) => <span key={m}>{m}</span>)}
-        </nav>
-        <span className="winctl" aria-hidden="true"><i>—</i><i>▢</i><i>✕</i></span>
       </div>
-      <div className="desk-body">
+      <div className={`desk-body ${panel ? 'with-panel' : ''}`}>
         <aside className="desk-side" aria-label="Folks">
           <div className="side-top">
             <div className="search"><Icon name="search" size={16} /> Search <kbd>Ctrl+K</kbd></div>
@@ -254,9 +337,25 @@ export function DeskDemo() {
             <span className="pill2"><Icon name="plus" size={13} /> Task</span>
             {active === 'assistant' && <span className="pill2 leader"><Icon name="star" size={13} /> Leader</span>}
             <span className="grow" />
-            <span className="model">Local model <Icon name="down" size={14} /></span>
-            <Icon name="monitor" />
-            <Icon name="radio" />
+            <div className="model-wrap" ref={modelRef}>
+              <button className="model" aria-expanded={modelOpen} aria-haspopup="listbox" onClick={() => setModelOpen((v) => !v)}>
+                {model} <Icon name="down" size={14} />
+              </button>
+              {modelOpen && (
+                <ul className="model-list" role="listbox" aria-label="Model">
+                  {MODELS.map((m) => (
+                    <li key={m.name}>
+                      <button role="option" aria-selected={m.name === model} className={m.name === model ? 'on' : ''} onClick={() => { setModel(m.name); setModelOpen(false); }}>
+                        <b>{m.name}</b><span>{m.note}</span>
+                      </button>
+                    </li>
+                  ))}
+                  <li className="model-foot">Demo only. Nothing is sent anywhere.</li>
+                </ul>
+              )}
+            </div>
+            <button className={`hbtn ${panel === 'computer' ? 'on' : ''}`} aria-label="Computer" aria-pressed={panel === 'computer'} onClick={() => setPanel(panel === 'computer' ? null : 'computer')}><Icon name="monitor" /></button>
+            <button className={`hbtn ${panel === 'backstage' ? 'on' : ''}`} aria-label="Backstage" aria-pressed={panel === 'backstage'} onClick={() => setPanel(panel === 'backstage' ? null : 'backstage')}><Icon name="radio" /></button>
           </header>
           <div className="msgs" ref={scroller} aria-live="polite">
             {messages.map((m, i) => <MsgView key={i} m={m} />)}
@@ -276,6 +375,11 @@ export function DeskDemo() {
             <button className="send" type="submit" aria-label="Send" disabled={!draft.trim() || busy === active}><Icon name="up" size={16} /></button>
           </form>
         </section>
+        {panel && (
+          <aside className="desk-panel" aria-label={panel === 'computer' ? 'Computer' : 'Backstage'}>
+            {panel === 'computer' ? <ComputerPanel folk={folk.name} busy={busy === active} /> : <BackstagePanel folk={folk.name} active={active} busy={busy === active} />}
+          </aside>
+        )}
       </div>
     </div>
   );
