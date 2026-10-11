@@ -1,5 +1,7 @@
+'use client';
+
 import { BotAvatar, type BotAvatarType } from "bot-avatars";
-import { COLORS, type ColorName } from "../folks";
+import { COLORS, type ColorName } from "@/lib/folks";
 
 interface Props {
   type: BotAvatarType;

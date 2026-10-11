@@ -1,4 +1,4 @@
-import type { FolkId } from "../folks";
+import type { FolkId } from "@/lib/folks";
 
 export type Msg =
   | { kind: "text"; from: "you" | "folk"; text: string }

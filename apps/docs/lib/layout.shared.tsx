@@ -6,13 +6,11 @@ export function baseOptions(): BaseLayoutProps {
   return {
     nav: {
       title: <BrandTitle />,
-      url: '/docs',
+      url: '/',
       transparentMode: 'none',
     },
     links: [
-      { text: 'Website', url: 'https://www.openfolks.com', external: true },
-      { text: 'Changelog', url: '/docs/changelog' },
-      { type: 'button', text: 'Download', url: 'http://github.com/manasdutta04/openfolks/releases/latest', external: true },
+      { type: 'button', text: 'Download', url: '/download' },
     ],
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
   };

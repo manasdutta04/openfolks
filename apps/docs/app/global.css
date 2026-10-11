@@ -198,3 +198,11 @@ body {
     border-radius: 0.9rem;
   }
 }
+
+/* Minimal docs sidebar: narrow, text only, quiet until used. */
+#nd-docs-layout { --fd-sidebar-width: 224px; }
+#nd-sidebar { font-size: 0.84rem; background: transparent; backdrop-filter: none; border-right: 1px solid color-mix(in srgb, var(--folks-line) 60%, transparent); }
+#nd-sidebar a, #nd-sidebar button { color: var(--folks-muted); font-weight: 400; border-radius: 0.4rem; }
+#nd-sidebar a:hover, #nd-sidebar button:hover { color: var(--folks-ink); background: transparent; }
+#nd-sidebar a[data-active='true'] { color: var(--folks-ink); background: transparent; }
+#nd-sidebar a[data-active='true']::before { background: var(--folks-ink); }

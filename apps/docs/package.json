@@ -14,6 +14,7 @@
     "preview": "next start"
   },
   "dependencies": {
+    "bot-avatars": "^0.1.2",
     "cnfast": "^0.1.0",
     "fumadocs-core": "16.14.5",
     "fumadocs-mdx": "15.3.0",

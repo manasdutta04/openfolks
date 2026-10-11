@@ -26,8 +26,6 @@
     "check:contrast": "node scripts/check-skin-contrast.mjs",
     "i18n:check": "node scripts/generate-locale.mjs --check",
     "dev": "vite",
-    "landing:dev": "vite --config landing/vite.config.ts",
-    "landing:build": "vite build --config landing/vite.config.ts",
     "docs:dev": "pnpm --filter @openfolks/docs dev",
     "docs:build": "pnpm --filter @openfolks/docs build",
     "docs:preview": "pnpm --filter @openfolks/docs preview",

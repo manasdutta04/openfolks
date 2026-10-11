@@ -1,6 +1,8 @@
+'use client';
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { FOLKS, type FolkId } from "../folks";
-import { SUGGESTIONS, THREADS, replyFor, type Msg } from "../demo/script";
+import { FOLKS, type FolkId } from "@/lib/folks";
+import { SUGGESTIONS, THREADS, replyFor, type Msg } from "@/lib/demo-script";
 import { FolkAvatar } from "./FolkAvatar";
 
 type Shown = Record<FolkId, Msg[]>;

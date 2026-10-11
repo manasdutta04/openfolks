@@ -1,5 +1,4 @@
 import { loader } from 'fumadocs-core/source';
-import { lucideIconsPlugin } from 'fumadocs-core/source/lucide-icons';
 import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
@@ -20,7 +19,22 @@ const docs = defineDocs({
 export const source = loader({
   baseUrl: docsRoute,
   source: docs.toFumadocsSource(),
-  plugins: [lucideIconsPlugin()],
+  plugins: [
+    {
+      // The sidebar is text only: drop the icon names carried in frontmatter.
+      name: 'no-icons',
+      transformPageTree: {
+        file(node) {
+          delete node.icon;
+          return node;
+        },
+        folder(node) {
+          delete node.icon;
+          return node;
+        },
+      },
+    },
+  ],
 });
 
 export function getPageImageUrl(page: (typeof source)['$inferPage']) {

@@ -1,0 +1,5 @@
+Contact: https://github.com/manasdutta04/openfolks/security/advisories/new
+Expires: 2027-10-11T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://openfolks.com/.well-known/security.txt
+Policy: https://openfolks.com/security
