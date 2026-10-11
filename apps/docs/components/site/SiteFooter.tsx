@@ -25,7 +25,6 @@ export function SiteFooter() {
           Made by the OpenFolks community
           <span className="built-av" tabIndex={0}>
             <img src="/openfolk.png" alt="OpenFolks mascot" width={26} height={26} />
-            <span className="built-tip" role="tooltip">Hi, this is the OpenFolks mark</span>
           </span>
         </p>
       }

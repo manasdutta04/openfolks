@@ -1,51 +1,64 @@
 # OpenFolks
 
-A local-first desktop workplace for AI teammates. You hire **folks**, give them engines, folders, and computers, and run the whole team from one **Desk**.
+OpenFolks is a free, open-source desktop app for working with a team of AI agents. You create **folks**, give each one a model, a working folder and a computer, assign them work in a chat window, and review what they did. Your conversations and files are stored on your own computer.
 
-Windows, macOS, and Linux. Your conversations, keys, and files stay on the machine unless you send them out through an engine or a connected app.
+## Features
+
+**Folks**
+- A folk is a long-lived teammate with its own instructions, model, voice, working folder, memory, tools and computer.
+- Each conversation with a folk is a task, with its own transcript, approvals, costs and state.
+- Send a message while a folk is busy and it is queued; supported engines can also be steered mid-turn.
+- Edit, branch, rewind, pin, reply to and export any conversation.
+
+**Rooms and crews**
+- Put several folks in one room to share a brief and hand work to each other.
+- Install a ready-made crew from the Marketplace: Dev Crew, Job Search, Sales Pipeline, Research Desk or Content Studio.
+
+**Computers**
+- Run a folk on your own computer (an explicit opt-in, chosen per folk), in an isolated Local VM through Docker or Podman, on a hosted cloud computer, or on a server you own over SSH.
+- Watch a folk work through a live preview, and take over where the backend supports it.
+
+**Routines and webhooks**
+- Run a task once, on selected weekdays, or when a webhook arrives.
+- Every run starts with fresh context and leaves a receipt.
+
+**Memory and voice**
+- Each folk keeps plain-text memory that you can read, edit and delete.
+- Spoken replies and per-folk voices through ElevenLabs; on macOS, on-device dictation and call mode.
+
+**Connected apps and tools**
+- Connect Gmail, GitHub, Slack, Notion and many other services, with several labelled accounts per service.
+- Attach your own tools through MCP.
+
+**Oversight**
+- Risky actions appear as approval cards in the conversation.
+- Backstage shows the live record of each turn: tool calls, requests and errors.
+- Per-task token and cost visibility.
+
+**Engines**
+- Folks run through the agent tools you already use, such as Claude and Codex, or through a local model.
+
+Data is stored in `~/.openfolks`. Set `OPENFOLKS_DATA_DIR` to use another location.
 
 ## Download
 
-Installers are on [GitHub Releases](https://github.com/manasdutta04/openfolks/releases). Builds are unsigned.
+Installers are published on the [latest release](https://github.com/manasdutta04/openfolks/releases/latest).
 
-**macOS** — after installing from the DMG, clear Gatekeeper quarantine once:
+| System | File |
+|---|---|
+| Windows 10 and 11 (x64) | [OpenFolks-setup.exe](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe) |
+| macOS, Apple silicon | [OpenFolks.dmg](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg) |
+| macOS, Intel | [OpenFolks-intel.dmg](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg) |
+| Ubuntu 24.04 (x64) | [OpenFolks-amd64.deb](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-amd64.deb) or [OpenFolks.AppImage](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.AppImage) |
 
-```bash
-xattr -cr /Applications/OpenFolks.app
-```
+The installers are not signed with an Apple or Microsoft certificate, so your system asks you to confirm the first time you open the app:
 
-Or right-click the app → **Open** → **Open**.
+- **Windows:** in SmartScreen, choose **More info**, then **Run anyway**.
+- **macOS:** after copying the app to Applications, run `xattr -cr /Applications/OpenFolks.app`, or right-click the app and choose **Open**.
+- **Linux:** install the package with `sudo apt install ./OpenFolks-amd64.deb`.
 
-**Windows** — if SmartScreen warns, choose **More info** → **Run anyway**.
-
-## The workplace
-
-- **Desk** — HQ. Conversations, unread work, crew maps, settings.
-- **Folks** — teammates you create. Each has a model, memory, tools, and a computer destination.
-- **Crews** — ready-made teams from the Marketplace (Job Search, Dev Crew, and more).
-- **Computers** — **This computer**, a **Local VM**, or a cloud desktop under Advanced.
-- **MCP** — extra tools you attach so folks can reach your services.
-
-The first Assistant slot starts empty. Install a crew or hire a folk from scratch.
+Each release includes `SHA256SUMS.txt` so you can check your download.
 
 ## License
 
-OpenFolks is licensed under the [MIT License](LICENSE). Third-party notices live in [NOTICE](NOTICE).
-
-## Requirements
-
-- Node.js 24+
-- pnpm 10+
-
-## Run from source
-
-```bash
-pnpm install
-pnpm dev:server   # harness API — 127.0.0.1:8799
-pnpm dev          # Desk UI — 127.0.0.1:5199
-pnpm dev:desktop  # Electron shell (keep the two commands above running)
-```
-
-Application data lives in `~/.openfolks/` (`OPENFOLKS_DATA_DIR` overrides). If that folder is missing, OpenFolks still finds data from a previous install.
-
-Contributor notes: [docs/](docs/). Public user guide: [apps/docs](apps/docs).
+OpenFolks is released under the [MIT License](LICENSE). Third-party notices are in [NOTICE](NOTICE).
