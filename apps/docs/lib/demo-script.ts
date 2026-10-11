@@ -2,99 +2,75 @@ import type { FolkId } from "@/lib/folks";
 
 export type Msg =
   | { kind: "text"; from: "you" | "folk"; text: string }
+  | { kind: "worked"; seconds: number }
+  | { kind: "messaged"; to: FolkId }
   | { kind: "steps"; lines: [string, string][] }
-  | { kind: "routine"; name: string }
-  | { kind: "handoff"; a: FolkId; b: FolkId; text: string };
+  | { kind: "routine"; name: string };
 
 export interface Thread {
   id: FolkId;
-  preview: string;
-  time: string;
   messages: Msg[];
 }
 
-const t = (from: "you" | "folk", text: string): Msg => ({ kind: "text", from, text });
+const you = (text: string): Msg => ({ kind: "text", from: "you", text });
+const folk = (text: string): Msg => ({ kind: "text", from: "folk", text });
 
 /** Original copy, written for OpenFolks. */
 export const THREADS: Thread[] = [
   {
-    id: "outbound",
-    preview: "Done.",
-    time: "7:11 PM",
+    id: "assistant",
     messages: [
-      t("you", "Build me a list of 50 accounts that look like our best customers and draft the first touch."),
-      t("folk", "On it. I'll use my own computer so nothing touches yours."),
-      {
-        kind: "steps",
-        lines: [
-          ["Salesforce", "list pulled · 52 accounts"],
-          ["Lookalikes", "3 segments scored"],
-          ["LinkedIn", "4 profiles skipped · recently contacted"],
-          ["Sequencer", "36 drafts queued · 0 sent"],
-        ],
-      },
-      { kind: "handoff", a: "inbox", b: "chief", text: "sent over the Acme + Globex threads and flagged the priority accounts. Both are folded into tonight's list." },
-      t("folk", "The 36 drafts are waiting in the queue with recipient, opener and a Draft badge on each. Nothing goes out until you've had a look."),
-      t("you", "The top 10 look good. Send it. Run this every week."),
-      { kind: "routine", name: "Overnight outbound" },
-      t("folk", "Done."),
+      you("Spin up two folks: one for the gym, one for eye care and general health."),
+      { kind: "worked", seconds: 16 },
+      folk(
+        "Done. Two specialists are now on your team:\n• @Coach, gym and fitness: plans your weekly workouts and gym sessions.\n• @Vision, eye care and health: a daily checklist for screen habits, sleep and routine.\nI asked each of them to draft a starter plan. Tell me your goals and your screen habits so they can adjust it.",
+      ),
+      { kind: "messaged", to: "coach" },
+      { kind: "messaged", to: "vision" },
+      folk(
+        "@Vision replied with a starter routine: every 20 minutes look at something 20 feet away for 20 seconds, blink fully while you read, and keep lubricating drops nearby. It is general guidance, not medical advice.",
+      ),
     ],
   },
   {
-    id: "chief",
-    preview: "booked the venue and sent the confirmation around.",
-    time: "Yesterday",
+    id: "coach",
     messages: [
-      t("you", "Find a venue for the team offsite, 12 people, first week of next month."),
-      t("folk", "Three options under budget. The lakeside one has the AV you asked for and a free cancellation window."),
-      t("you", "Book the lakeside one."),
-      t("folk", "Booked. Confirmation is in your inbox and I sent the details to everyone attending."),
+      you("Draft a three-day gym plan for me."),
+      { kind: "worked", seconds: 9 },
+      folk("Day 1 push, day 2 pull, day 3 legs, with five exercises each and a rest day between them. Tell me what equipment you have and I will adjust the plan."),
+    ],
+  },
+  {
+    id: "vision",
+    messages: [
+      you("Remind me to take eye breaks on weekdays."),
+      { kind: "routine", name: "Eye break reminders" },
+      folk("Set. I will prompt you every 20 minutes between 9:00 and 18:00 on weekdays, and each run leaves a receipt."),
     ],
   },
   {
     id: "inbox",
-    preview: "sent. inbox at zero, 5 drafts parked for tomorrow.",
-    time: "4:12 PM",
     messages: [
-      t("you", "Clear my inbox. Reply to anything routine, park anything that needs me."),
-      t("folk", "14 threads. 9 routine replies sent in your voice, 5 drafted and parked for tomorrow, 0 left."),
-      t("you", "Nice. Keep doing that every weekday morning."),
-      { kind: "routine", name: "Weekday inbox zero" },
-    ],
-  },
-  {
-    id: "scout",
-    preview: "3 intros drafted in your voice, held for your ok.",
-    time: "11:12 AM",
-    messages: [
-      t("you", "Find three senior designers who've shipped a design system, and draft an intro to each."),
-      t("folk", "Found three strong fits. Intros are drafted in your voice and held for your ok, nothing is sent."),
-    ],
-  },
-  {
-    id: "books",
-    preview: "report filed. 9 receipts, nothing outstanding.",
-    time: "3:12 PM",
-    messages: [
-      t("you", "File this month's expenses."),
-      t("folk", "Report filed. 9 receipts matched, 0 missing, nothing outstanding."),
+      you("Clear my inbox. Reply to anything routine and park anything that needs me."),
+      { kind: "worked", seconds: 41 },
+      folk("14 threads. 9 routine replies sent in your voice, 5 drafted and parked for tomorrow, none left."),
+      you("Good. Do that every weekday morning."),
+      { kind: "routine", name: "Weekday inbox" },
     ],
   },
   {
     id: "dev",
-    preview: "fixed the failing checkout test, PR is up for review.",
-    time: "1:12 PM",
     messages: [
-      t("you", "The checkout test is flaky on CI. Can you sort it?"),
+      you("The checkout test fails now and then on CI. Can you sort it out?"),
       {
         kind: "steps",
         lines: [
-          ["Planner", "reproduced · race in the cart fixture"],
-          ["Builder", "fix applied · 3 runs green"],
-          ["Reviewer", "diff reviewed · no regressions"],
+          ["Planner", "reproduced it: a race in the cart fixture"],
+          ["Builder", "fix applied, three runs passed"],
+          ["Reviewer", "diff reviewed, no regressions"],
         ],
       },
-      t("folk", "Fixed. The fixture was reading before the cart settled. PR is up for review."),
+      folk("Fixed. The fixture read the cart before it had settled. A pull request is open for review."),
     ],
   },
 ];
@@ -105,18 +81,18 @@ interface Reply {
 }
 
 const REPLIES: Reply[] = [
-  { match: /inbox|email|mail|reply/i, text: "I'll triage it: reply to anything routine, draft the rest in your voice and hold those for your ok. Want it as a weekday routine?" },
-  { match: /report|weekly|summary|expens/i, text: "Pulling the numbers now. I'll leave a short summary plus the raw sheet, and note anything that looks off." },
-  { match: /bug|test|fix|code|deploy|pr\b/i, text: "I'll reproduce it first, then make a focused fix, run the checks and open a PR for your review." },
-  { match: /research|compet|market|find|look up/i, text: "Starting research. I'll gather sources, separate fact from speculation and return a short brief with the open questions." },
-  { match: /price|cost|free|pay|licen/i, text: "OpenFolks itself is free and MIT-licensed. You only pay the providers whose models you plug in." },
-  { match: /download|install|windows|mac|linux|try/i, text: "You can have this running on your own machine in a minute. The download button is just below." },
-  { match: /routine|schedule|every|daily|weekday/i, text: "Done: I've set that up as a routine. Each run starts fresh, leaves a receipt and pings you only if it needs you." },
-  { match: /hello|hi\b|hey|who are you/i, text: "Hi, I'm a folk: an AI teammate with my own role, memory and computer. Give me a task and I'll come back with finished work." },
+  { match: /inbox|email|mail|reply/i, text: "I will triage it: reply to anything routine, draft the rest in your voice and hold those for your approval. Should I make this a weekday routine?" },
+  { match: /report|weekly|summary|expens/i, text: "Pulling the numbers now. I will leave a short summary and the raw sheet, and note anything that looks off." },
+  { match: /bug|test|fix|code|deploy|pr\b/i, text: "I will reproduce it first, make a focused fix, run the checks and open a pull request for your review." },
+  { match: /research|compet|market|find|look up/i, text: "Starting research. I will gather sources, separate fact from guesswork and send back a short brief with the open questions." },
+  { match: /price|cost|free|pay|licen/i, text: "OpenFolks is free under the MIT License. You only pay the providers whose models you connect." },
+  { match: /download|install|windows|mac|linux|try/i, text: "You can have this running on your own machine in a few minutes. The download button is further down this page." },
+  { match: /routine|schedule|every|daily|weekday/i, text: "Done. I set that up as a routine. Each run starts fresh, leaves a receipt, and I only message you if I need you." },
+  { match: /hello|hi\b|hey|who are you/i, text: "Hi. I am a folk: an AI teammate with a role, notes it keeps, and a computer to work on. Give me a task and I will report back when it is done." },
 ];
 
 const FALLBACK =
-  "Got it. On the real Desk I'd start right now, keep working while you do something else, and come back when I need your approval.";
+  "Understood. In the real app I would start now, keep working while you do something else, and come back when I need your approval.";
 
 export function replyFor(input: string): string {
   return REPLIES.find((r) => r.match.test(input))?.text ?? FALLBACK;

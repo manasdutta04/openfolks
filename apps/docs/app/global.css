@@ -40,7 +40,7 @@
 }
 
 html {
-  scrollbar-gutter: stable;
+  scrollbar-width: none;
   background: var(--folks-bg);
 }
 
@@ -206,3 +206,7 @@ body {
 #nd-sidebar a:hover, #nd-sidebar button:hover { color: var(--folks-ink); background: transparent; }
 #nd-sidebar a[data-active='true'] { color: var(--folks-ink); background: transparent; }
 #nd-sidebar a[data-active='true']::before { background: var(--folks-ink); }
+
+/* Scrollbars stay out of sight everywhere; scrolling itself still works. */
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }

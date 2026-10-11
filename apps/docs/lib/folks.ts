@@ -19,7 +19,7 @@ export const COLORS = {
 } as const;
 export type ColorName = keyof typeof COLORS;
 
-export type FolkId = "chief" | "outbound" | "inbox" | "scout" | "books" | "dev";
+export type FolkId = "assistant" | "coach" | "vision" | "inbox" | "dev" | "chief" | "outbound" | "scout" | "books";
 
 export interface Folk {
   id: FolkId;
@@ -30,6 +30,9 @@ export interface Folk {
 }
 
 export const FOLKS: Record<FolkId, Folk> = {
+  assistant: { id: "assistant", name: "Assistant", role: "Leader", type: "clover", color: "green" },
+  coach: { id: "coach", name: "Coach", role: "Gym and fitness", type: "star", color: "red" },
+  vision: { id: "vision", name: "Vision", role: "Eye care and health", type: "circle", color: "purple" },
   chief: { id: "chief", name: "Chief", role: "Chief of staff", type: "blob", color: "teal" },
   outbound: { id: "outbound", name: "Sales Outbound", role: "Pipeline", type: "hexagon", color: "orange" },
   inbox: { id: "inbox", name: "Inbox", role: "Email triage", type: "triangle", color: "purple" },
