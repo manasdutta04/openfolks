@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { FOLKS, type FolkId } from '@/lib/folks';
 import { SUGGESTIONS, THREADS, replyFor, type Msg } from '@/lib/demo-script';
 import { FolkAvatar } from './FolkAvatar';
+import { PROVIDERS } from '@/lib/providers';
 
 type Shown = Record<FolkId, Msg[]>;
 
@@ -92,13 +93,6 @@ const FALLBACK_PREVIEW: Partial<Record<FolkId, string>> = {
   dev: 'Ready when you are.',
 };
 
-const MODELS = [
-  { name: 'Local model', note: 'Runs on this computer' },
-  { name: 'Claude', note: 'Uses your own sign-in' },
-  { name: 'Codex', note: 'Uses your own sign-in' },
-  { name: 'Custom API', note: 'Any OpenAI-compatible endpoint' },
-];
-
 function ComputerPanel({ folk, busy }: { folk: string; busy: boolean }) {
   const [secs, setSecs] = useState(0);
   const [takeover, setTakeover] = useState(false);
@@ -178,7 +172,8 @@ export function DeskDemo() {
   const [typing, setTyping] = useState<FolkId | null>(null);
   const [draft, setDraft] = useState('');
   const [panel, setPanel] = useState<'computer' | 'backstage' | null>(null);
-  const [model, setModel] = useState(MODELS[0]!.name);
+  const [model, setModel] = useState('Claude Sonnet 5');
+  const [pane, setPane] = useState('claude');
   const [modelOpen, setModelOpen] = useState(false);
   const modelRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -342,16 +337,47 @@ export function DeskDemo() {
                 {model} <Icon name="down" size={14} />
               </button>
               {modelOpen && (
-                <ul className="model-list" role="listbox" aria-label="Model">
-                  {MODELS.map((m) => (
-                    <li key={m.name}>
-                      <button role="option" aria-selected={m.name === model} className={m.name === model ? 'on' : ''} onClick={() => { setModel(m.name); setModelOpen(false); }}>
-                        <b>{m.name}</b><span>{m.note}</span>
-                      </button>
-                    </li>
-                  ))}
-                  <li className="model-foot">Demo only. Nothing is sent anywhere.</li>
-                </ul>
+                <div className="model-pop" role="dialog" aria-label="Choose a model">
+                  <div className="rail">
+                    {(['Cloud', 'Local'] as const).map((g) => (
+                      <div key={g} className="rail-group">
+                        <span>{g}</span>
+                        {PROVIDERS.filter((p) => p.group === g).map((p) => (
+                          <button
+                            key={p.id}
+                            className={p.id === pane ? 'on' : ''}
+                            aria-label={p.name}
+                            title={p.name}
+                            style={{ color: p.color }}
+                            onClick={() => setPane(p.id)}
+                          >
+                            {p.glyph}
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  {(() => {
+                    const p = PROVIDERS.find((x) => x.id === pane)!;
+                    return (
+                      <div className="mp-pane">
+                        <div className="mp-head"><b>{p.name}</b><span>{p.status}</span></div>
+                        <p>{p.blurb}</p>
+                        <h4>Suggested</h4>
+                        <ul>
+                          {p.models.map((m) => (
+                            <li key={m.name}>
+                              <button className={m.name === model ? 'on' : ''} onClick={() => { setModel(m.name); setModelOpen(false); }}>
+                                {m.name}{m.default && <em>Default</em>}
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                        <small>Demo only. Nothing is sent anywhere.</small>
+                      </div>
+                    );
+                  })()}
+                </div>
               )}
             </div>
             <button className={`hbtn ${panel === 'computer' ? 'on' : ''}`} aria-label="Computer" aria-pressed={panel === 'computer'} onClick={() => setPanel(panel === 'computer' ? null : 'computer')}><Icon name="monitor" /></button>

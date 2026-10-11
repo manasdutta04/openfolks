@@ -412,3 +412,24 @@ html:has(.site)::-webkit-scrollbar, .site *::-webkit-scrollbar { display: none; 
 @media (max-width: 760px) { .site .hbtn { display: none; } .site .desk-body { height: 520px; } }
 .site .model, .site .pill2, .site .chat-head b { white-space: nowrap; flex: none; }
 .site .chat-head { min-width: 0; }
+
+/* model picker: provider rail plus model list, as in the app */
+.site .model-pop { position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 420px; max-width: calc(100vw - 32px); display: grid; grid-template-columns: 64px minmax(0, 1fr); background: #131316; border: 1px solid var(--d-line); border-radius: 14px; box-shadow: 0 22px 60px rgb(0 0 0 / .65); overflow: hidden; animation: pop .15s ease both; text-align: left; }
+.site .model-pop .rail { display: grid; align-content: start; gap: 4px; padding: 10px 8px; background: #0e0e11; border-right: 1px solid var(--d-line); }
+.site .rail-group { display: grid; gap: 4px; justify-items: center; }
+.site .rail-group span { font-size: .6rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #6f6f7a; margin: 8px 0 2px; }
+.site .rail-group:first-child span { margin-top: 0; }
+.site .rail button { width: 40px; height: 40px; display: grid; place-items: center; font-size: 1.15rem; line-height: 1; background: none; border: 0; border-radius: 10px; cursor: pointer; transition: background .15s; }
+.site .rail button:hover { background: #1a1a1e; }
+.site .rail button.on { background: #26262e; }
+.site .mp-pane { padding: 16px 16px 12px; min-height: 340px; display: flex; flex-direction: column; }
+.site .mp-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.site .mp-head b { font-weight: 500; font-size: 1.05rem; }
+.site .mp-head span { font-size: .7rem; color: var(--ok); background: rgb(78 201 154 / .12); border: 1px solid rgb(78 201 154 / .25); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.site .mp-pane p { margin: 6px 0 0; color: var(--ink2); font-size: .84rem; }
+.site .mp-pane h4 { margin: 18px 0 6px; font-size: .66rem; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink2); }
+.site .mp-pane ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.site .mp-pane li button { width: 100%; display: flex; align-items: center; gap: 10px; padding: 9px 8px; font-size: .92rem; text-align: left; background: none; border: 0; border-radius: 8px; cursor: pointer; overflow-wrap: anywhere; }
+.site .mp-pane li button:hover, .site .mp-pane li button.on { background: #1d1d22; }
+.site .mp-pane em { font-style: normal; font-size: .68rem; color: var(--ink); background: #09090b; border-radius: 5px; padding: 2px 8px; flex: none; }
+.site .mp-pane small { margin-top: auto; padding-top: 12px; color: #6f6f7a; font-size: .72rem; }
