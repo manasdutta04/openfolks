@@ -1,7 +1,13 @@
 # OpenFolks landing page
 
-Static, dependency-free site (HTML + CSS + a little JS). No build step.
+A small Vite + React site. It reuses the app's own mascots (`bot-avatars`) and
+reads the crew list straight from `../crews/*/crew.openfolks.json`.
 
-- Preview: `python -m http.server 5290 --directory landing` then open http://127.0.0.1:5290
-- Deploy: publish the `landing/` folder as-is (GitHub Pages, Cloudflare Pages, Netlify, any static host).
-- Download buttons use `releases/latest/download/<stable name>`, so they follow every new release automatically.
+```bash
+pnpm landing:dev     # http://127.0.0.1:5290
+pnpm landing:build   # static output in landing/dist
+```
+
+- The hero Desk is an interactive demo: click a folk, watch its thread play, or type a message.
+- Download buttons are OS-aware and point at `releases/latest/download/<stable name>`, so they follow every release.
+- `.github/workflows/landing.yml` publishes `landing/dist` to GitHub Pages (set Settings → Pages → Source to "GitHub Actions" once).
