@@ -1,4 +1,7 @@
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://openfolks.com';
+// Order: explicit setting, then the production domain Vercel assigns, then a placeholder.
+export const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : 'https://openfolks.com');
 export const REPO = 'https://github.com/manasdutta04/openfolks';
 export const RELEASES = `${REPO}/releases/latest`;
 const BASE = `${REPO}/releases/latest/download/`;
