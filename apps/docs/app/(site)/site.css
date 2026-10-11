@@ -422,7 +422,7 @@ html:has(.site)::-webkit-scrollbar, .site *::-webkit-scrollbar { display: none; 
 .site .rail button { width: 40px; height: 40px; display: grid; place-items: center; font-size: 1.15rem; line-height: 1; background: none; border: 0; border-radius: 10px; cursor: pointer; transition: background .15s; }
 .site .rail button:hover { background: #1a1a1e; }
 .site .rail button.on { background: #26262e; }
-.site .mp-pane { padding: 16px 16px 12px; min-height: 340px; display: flex; flex-direction: column; }
+.site .mp-pane { padding: 16px 16px 16px; min-height: 280px; display: flex; flex-direction: column; }
 .site .mp-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .site .mp-head b { font-weight: 500; font-size: 1.05rem; }
 .site .mp-head span { font-size: .7rem; color: var(--ok); background: rgb(78 201 154 / .12); border: 1px solid rgb(78 201 154 / .25); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }

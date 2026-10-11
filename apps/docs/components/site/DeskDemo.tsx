@@ -5,6 +5,17 @@ import { FOLKS, type FolkId } from '@/lib/folks';
 import { SUGGESTIONS, THREADS, replyFor, type Msg } from '@/lib/demo-script';
 import { FolkAvatar } from './FolkAvatar';
 import { PROVIDERS } from '@/lib/providers';
+import { ClaudeMark, CodexMark, LmStudioMark, OllamaMark, OpenRouterMark } from './ProviderMarks';
+
+function ProviderLogo({ id, size }: { id: string; size: number }) {
+  switch (id) {
+    case 'claude': return <ClaudeMark size={size} />;
+    case 'chatgpt': return <CodexMark size={size} />;
+    case 'openrouter': return <OpenRouterMark size={size} />;
+    case 'ollama': return <OllamaMark size={size} />;
+    default: return <LmStudioMark size={size} />;
+  }
+}
 
 type Shown = Record<FolkId, Msg[]>;
 
@@ -348,10 +359,9 @@ export function DeskDemo() {
                             className={p.id === pane ? 'on' : ''}
                             aria-label={p.name}
                             title={p.name}
-                            style={{ color: p.color }}
                             onClick={() => setPane(p.id)}
                           >
-                            {p.glyph}
+                            <ProviderLogo id={p.id} size={20} />
                           </button>
                         ))}
                       </div>
@@ -373,7 +383,6 @@ export function DeskDemo() {
                             </li>
                           ))}
                         </ul>
-                        <small>Demo only. Nothing is sent anywhere.</small>
                       </div>
                     );
                   })()}
