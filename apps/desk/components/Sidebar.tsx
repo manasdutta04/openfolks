@@ -1197,7 +1197,8 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
   const naturalSectionIds = [
     ...(pinnedBots.length > 0 ? [PINNED_SECTION_ID] : []),
     ...(unsectionedRooms.length > 0 ? [CHANNELS_SECTION_ID] : []),
-    ...(botChats.length > 0 ? [BOT_CHATS_SECTION_ID] : []),
+    // Folk-to-folk channels are read-only and have no sidebar entry; they open
+    // from the "Messaged" chips in a folk's chat and from the Desk map.
     ...(unsectionedBots.length > 0 ? [BOTS_SECTION_ID] : []),
     ...sectionNames.map(userSectionId),
   ];

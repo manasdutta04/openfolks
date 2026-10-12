@@ -55,7 +55,7 @@ function withMentions(text: string) {
   );
 }
 
-function MsgView({ m }: { m: Msg }) {
+function MsgView({ m, onOpen }: { m: Msg; onOpen: (id: FolkId) => void }) {
   if (m.kind === 'text') {
     return (
       <div className={`bubble ${m.from}`}>
@@ -75,9 +75,9 @@ function MsgView({ m }: { m: Msg }) {
     const f = FOLKS[m.to];
     return (
       <div className="chipline">
-        <span className="pillchip">
+        <button type="button" className="pillchip" onClick={() => onOpen(m.to)} title="Open this conversation">
           <FolkAvatar type={f.type} color={f.color} size={18} label={f.name} /> Messaged @{f.name} <Icon name="right" size={14} />
-        </span>
+        </button>
       </div>
     );
   }
@@ -321,18 +321,6 @@ export function DeskDemo() {
           </div>
           <div className="side-scroll">
             <ul>{row('assistant', { big: true, star: true })}</ul>
-            <h3 className="sec">Folk chats</h3>
-            <ul>
-              <li>
-                <button className={`row ${active === 'coach' ? 'active' : ''}`} onClick={() => select('coach')}>
-                  <span className="pair">
-                    <FolkAvatar type={FOLKS.assistant.type} color={FOLKS.assistant.color} size={34} label="Assistant" />
-                    <FolkAvatar type={FOLKS.coach.type} color={FOLKS.coach.color} size={34} working={busy === 'coach'} label="Coach" />
-                  </span>
-                  <span className="meta"><b>Assistant ⇄ Coach</b><small>{preview(shown.coach, 'Ready when you are.')}</small></span>
-                </button>
-              </li>
-            </ul>
             <h3 className="sec">Folks</h3>
             <ul>{row('vision')}{row('inbox')}{row('dev')}</ul>
           </div>
@@ -400,7 +388,7 @@ export function DeskDemo() {
             <button className={`hbtn ${panel === 'backstage' ? 'on' : ''}`} aria-label="Backstage" aria-pressed={panel === 'backstage'} onClick={() => setPanel(panel === 'backstage' ? null : 'backstage')}><Icon name="radio" /></button>
           </header>
           <div className="msgs" ref={scroller} aria-live="polite">
-            {messages.map((m, i) => <MsgView key={i} m={m} />)}
+            {messages.map((m, i) => <MsgView key={i} m={m} onOpen={select} />)}
             {typing === active && (
               <div className="bubble folk typing" aria-label={`${folk.name} is typing`}><span /><span /><span /></div>
             )}

@@ -440,3 +440,6 @@ html:has(.site)::-webkit-scrollbar, .site *::-webkit-scrollbar { display: none; 
 .site .ro-bar > span:first-child { flex: 1; min-width: 200px; }
 .site .ro-btns button { cursor: pointer; background: none; border: 1px solid var(--d-line); border-radius: 999px; padding: 5px 12px; color: var(--ink); font-size: .8rem; }
 .site .ro-btns button:hover { background: #1d1d22; }
+
+.site button.pillchip { cursor: pointer; font: inherit; font-size: .82rem; }
+.site button.pillchip:hover { border-color: #4a4a55; color: var(--ink); }
