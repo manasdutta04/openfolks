@@ -18,6 +18,7 @@ import {
 import { BotAvatar, MausAvatar } from "./Avatar";
 import { TurnPresence } from "./TurnPresence";
 import { showToolCallsEnabled } from "@/lib/feature-flags";
+import { groupAcceptsUserMessages } from "@/lib/folk-chat";
 import { avatarSeedFor } from "../../../shared/pebble-avatars";
 import { effectiveDefaultResponder, groupResponseHint } from "@/lib/group-routing";
 import { ChatMarkdown } from "./ChatMarkdown";
@@ -194,7 +195,7 @@ const Transcript = memo(function Transcript({
           ) : m.kind === "text" && m.text ? (
             <div className={cn("group flex w-full flex-col", user ? "items-end" : "items-start")}>
               <div className={cn("flex w-full items-end gap-1.5", user ? "justify-end" : "justify-start")}>
-                {user && (
+                {user && groupAcceptsUserMessages(group) && (
                   <button
                     type="button"
                     onClick={() => onReply(m)}
@@ -242,7 +243,7 @@ const Transcript = memo(function Transcript({
                     </>
                   ) : <ChatMarkdown text={m.text} />}
                 </div>
-                {!user && (
+                {!user && groupAcceptsUserMessages(group) && (
                   <button
                     type="button"
                     onClick={() => onReply(m)}
@@ -1207,16 +1208,39 @@ export function GroupView({ group }: { group: Group }) {
       )}
 
       <div ref={composerDockRef} className="absolute inset-x-0 bottom-0 z-[2]">
-      <Composer
-        key={group.threadId}
-        group={group}
-        members={members}
-        locked={setupPending}
-        replyTo={replyTo}
-        onClearReply={clearReply}
-        onConsumeReply={consumeReply}
-        onRestoreReply={restoreReply}
-      />
+      {groupAcceptsUserMessages(group) ? (
+        <Composer
+          key={group.threadId}
+          group={group}
+          members={members}
+          locked={setupPending}
+          replyTo={replyTo}
+          onClearReply={clearReply}
+          onConsumeReply={consumeReply}
+          onRestoreReply={restoreReply}
+        />
+      ) : (
+        <div className="mx-auto w-full max-w-[880px] px-5 pb-4 pt-2" role="note" data-testid="folk-chat-readonly">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl border border-hairline/40 bg-panel px-4 py-3 text-[13px] text-ink-secondary">
+            <span className="min-w-0 flex-1">
+              This is a conversation between folks. It is read-only. To give instructions, open one of their chats.
+            </span>
+            <span className="flex items-center gap-1.5">
+              {members.map((b) => (
+                <button
+                  key={b.id}
+                  type="button"
+                  onClick={() => dispatch({ type: "select", id: b.id })}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline/50 px-2.5 py-1 text-ink hover:bg-raised"
+                >
+                  <BotAvatar bot={b} size={16} animated={false} />
+                  {b.name}
+                </button>
+              ))}
+            </span>
+          </div>
+        </div>
+      )}
       </div>
       </div>
     </main>

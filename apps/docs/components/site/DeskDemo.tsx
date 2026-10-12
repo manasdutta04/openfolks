@@ -405,17 +405,28 @@ export function DeskDemo() {
               <div className="bubble folk typing" aria-label={`${folk.name} is typing`}><span /><span /><span /></div>
             )}
           </div>
-          <div className="suggest">
-            {suggestionsFor(active).map((s) => (
-              <button key={s} onClick={() => void send(s)} disabled={busy === active}>{s}</button>
-            ))}
-          </div>
-          <form className="composer" onSubmit={(e) => { e.preventDefault(); void send(draft); }}>
-            <Icon name="clip" />
-            <span className="auto"><Icon name="bolt" size={15} /> Auto</span>
-            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={pairChat ? 'Folks talk here. Open Assistant to step in.' : `Brief ${folk.name}`} disabled={pairChat} aria-label={`Message ${folk.name}`} />
-            <button className="send" type="submit" aria-label="Send" disabled={!draft.trim() || busy === active || pairChat}><Icon name="up" size={16} /></button>
-          </form>
+          {pairChat ? (
+            <div className="ro-bar" role="note">
+              <span>This is a conversation between folks. It is read-only. To give instructions, open a folk's own chat.</span>
+              <span className="ro-btns">
+                <button type="button" onClick={() => select('assistant')}>Assistant</button>
+              </span>
+            </div>
+          ) : (
+            <>
+            <div className="suggest">
+              {suggestionsFor(active).map((s) => (
+                <button key={s} onClick={() => void send(s)} disabled={busy === active}>{s}</button>
+              ))}
+            </div>
+            <form className="composer" onSubmit={(e) => { e.preventDefault(); void send(draft); }}>
+              <Icon name="clip" />
+              <span className="auto"><Icon name="bolt" size={15} /> Auto</span>
+              <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Brief ${folk.name}`} aria-label={`Message ${folk.name}`} />
+              <button className="send" type="submit" aria-label="Send" disabled={!draft.trim() || busy === active}><Icon name="up" size={16} /></button>
+            </form>
+              </>
+          )}
         </section>
         {panel && (
           <aside className="desk-panel" aria-label={panel === 'computer' ? 'Computer' : 'Backstage'}>

@@ -62,6 +62,7 @@ export const FEATURES: FeaturePage[] = [
     limits: [
       'Each folk runs through an engine you set up yourself, such as Claude or Codex. Its capabilities depend on that engine.',
       'Steering a running turn works only on engines that support it.',
+      'Conversations between two folks are read-only for you. You can read them, but to give instructions you open a folk’s own chat.',
     ],
     docs: [
       { href: '/docs/features/bots-and-tasks', label: 'Folks and work' },

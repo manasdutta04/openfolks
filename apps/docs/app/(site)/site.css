@@ -435,3 +435,8 @@ html:has(.site)::-webkit-scrollbar, .site *::-webkit-scrollbar { display: none; 
 .site .mp-pane small { margin-top: auto; padding-top: 12px; color: #6f6f7a; font-size: .72rem; }
 .site .bubble .who { display: block; font-size: .72rem; font-weight: 600; letter-spacing: .02em; color: var(--ink2); margin-bottom: 2px; }
 .site .bubble.peer { align-self: flex-end; background: #26262e; white-space: normal; }
+
+.site .ro-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin: 0 24px 18px; padding: 14px 16px; border: 1px solid var(--d-line); border-radius: 14px; background: #17171b; color: var(--ink2); font-size: .85rem; }
+.site .ro-bar > span:first-child { flex: 1; min-width: 200px; }
+.site .ro-btns button { cursor: pointer; background: none; border: 1px solid var(--d-line); border-radius: 999px; padding: 5px 12px; color: var(--ink); font-size: .8rem; }
+.site .ro-btns button:hover { background: #1d1d22; }

@@ -16,7 +16,7 @@ export interface CommsBus {
 
 /** Find or create the bot⇄bot channel for the pair. The channel keeps
  * the pair's full exchange, lives in the sidebar like any room, and the
- * user can open it to chip in. */
+ * user can open it to read the exchange. It is read-only for the user. */
 export function getOrCreateChannel(store: Store, from: BotRecord, target: BotRecord): GroupRecord {
   const existing = store.dmGroup(from.id, target.id);
   if (existing) {

@@ -5016,6 +5016,8 @@ async function reloadProviders() {
 let providerConfigBusy = false;
 
 // ── HTTP plumbing ─────────────────────────────────────────────────────
+const FOLK_CHAT_READ_ONLY = "Folk-to-folk channels are read-only. Message a folk directly instead.";
+
 function json(res: ServerResponse, status: number, body: unknown) {
   const data = JSON.stringify(body);
   res.writeHead(status, { "content-type": "application/json" });
@@ -6705,6 +6707,9 @@ const server = createServer(async (req, res) => {
       if (!text) return json(res, 400, { error: "text required" });
       const group = store.group(m[1]);
       if (!group) return json(res, 404, { error: "no such group" });
+      // Folk-to-folk channels belong to the folks. Their exchange is mirrored
+      // in by the server (comms-visibility.ts); the user only reads it.
+      if (group.dm) return json(res, 403, { error: FOLK_CHAT_READ_ONLY });
       if (body.mode !== undefined && body.mode !== "chat" && body.mode !== "goal") {
         return json(res, 400, { error: "mode must be chat or goal" });
       }
@@ -6811,6 +6816,9 @@ const server = createServer(async (req, res) => {
       const body = await readBody(req);
       const emoji = String(body.emoji ?? "").slice(0, 8);
       if (!emoji) return json(res, 400, { error: "emoji required" });
+      if (store.groupByThread(m[1])?.dm && (typeof body.by !== "string" || body.by === "user")) {
+        return json(res, 403, { error: FOLK_CHAT_READ_ONLY });
+      }
       const patched = store.toggleReaction(m[1], m[2], emoji, typeof body.by === "string" ? body.by : "user");
       if (!patched) return json(res, 404, { error: "no such message" });
       return json(res, 200, { message: patched });

@@ -997,6 +997,19 @@ describe("harness HTTP API", () => {
     expect(blocked.body.error).toMatch(/waiting on you/i);
   });
 
+  it("keeps folk-to-folk channels read-only for the user", async () => {
+    const before = (await api("GET", "/api/threads/test-dm-thread/messages")).body;
+    const sent = await api("POST", "/api/groups/test-dm/messages", { text: "hello from the user" });
+    expect(sent.status).toBe(403);
+    expect(sent.body.error).toMatch(/read-only/i);
+
+    const reacted = await api("POST", "/api/threads/test-dm-thread/messages/any-message/reactions", { emoji: "+1" });
+    expect(reacted.status).toBe(403);
+
+    const after = (await api("GET", "/api/threads/test-dm-thread/messages")).body;
+    expect(after).toEqual(before);
+  });
+
   it("keeps direct-message channels folderless at the API boundary", async () => {
     const attempted = await api("PATCH", "/api/groups/test-dm", { cwd: home });
     expect(attempted.status).toBe(400);
