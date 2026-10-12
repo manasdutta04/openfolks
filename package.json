@@ -1,7 +1,7 @@
 {
   "name": "openfolks",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A local-first desktop multi-agent workplace for Desk and Crews.",
   "homepage": "http://github.com/manasdutta04/openfolks",
   "repository": {

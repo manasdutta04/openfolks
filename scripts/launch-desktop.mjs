@@ -79,7 +79,7 @@ async function brandedWindowsElectron(source) {
 syncPngMark();
 const source = await electronPath();
 const binary = process.platform === "win32" ? await brandedWindowsElectron(source) : source;
-const child = spawn(binary, ["."], {
+const child = spawn(binary, [".", ...process.argv.slice(2)], {
   cwd: ROOT,
   stdio: "inherit",
   env: {
