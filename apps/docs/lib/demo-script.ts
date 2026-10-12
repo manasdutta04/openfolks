@@ -1,7 +1,7 @@
 import type { FolkId } from "@/lib/folks";
 
 export type Msg =
-  | { kind: "text"; from: "you" | "folk"; text: string }
+  | { kind: "text"; from: "you" | "folk" | "peer"; text: string; name?: string }
   | { kind: "worked"; seconds: number }
   | { kind: "messaged"; to: FolkId }
   | { kind: "steps"; lines: [string, string][] }
@@ -14,6 +14,9 @@ export interface Thread {
 
 const you = (text: string): Msg => ({ kind: "text", from: "you", text });
 const folk = (text: string): Msg => ({ kind: "text", from: "folk", text });
+/** Messages inside a folk chat: the leader on the right, the specialist on the left, no human involved. */
+const lead = (text: string): Msg => ({ kind: "text", from: "peer", text, name: "Assistant" });
+const coach = (text: string): Msg => ({ kind: "text", from: "folk", text, name: "Coach" });
 
 /** Original copy, written for OpenFolks. */
 export const THREADS: Thread[] = [
@@ -35,9 +38,12 @@ export const THREADS: Thread[] = [
   {
     id: "coach",
     messages: [
-      you("Draft a three-day gym plan for me."),
+      lead("You are now the gym folk. The user wants a starter plan: three days a week, no equipment details yet. Draft something I can show them."),
       { kind: "worked", seconds: 9 },
-      folk("Day 1 push, day 2 pull, day 3 legs, with five exercises each and a rest day between them. Tell me what equipment you have and I will adjust the plan."),
+      coach("Draft ready. Day 1 push, day 2 pull, day 3 legs, five exercises each, a rest day between. I assumed a full gym."),
+      lead("They have not said what equipment they have. Keep it simple and flag the assumption."),
+      coach("Flagged. I added a note at the top: swap any lift for a dumbbell or bodyweight version if they train at home. The plan is saved to plan.md in my notes."),
+      lead("Good. I will pass it on and ask about their equipment and goals."),
     ],
   },
   {
@@ -80,26 +86,69 @@ interface Reply {
   text: string;
 }
 
-const REPLIES: Reply[] = [
-  { match: /inbox|email|mail|reply/i, text: "I will triage it: reply to anything routine, draft the rest in your voice and hold those for your approval. Should I make this a weekday routine?" },
-  { match: /report|weekly|summary|expens/i, text: "Pulling the numbers now. I will leave a short summary and the raw sheet, and note anything that looks off." },
-  { match: /bug|test|fix|code|deploy|pr\b/i, text: "I will reproduce it first, make a focused fix, run the checks and open a pull request for your review." },
-  { match: /research|compet|market|find|look up/i, text: "Starting research. I will gather sources, separate fact from guesswork and send back a short brief with the open questions." },
-  { match: /price|cost|free|pay|licen/i, text: "OpenFolks is free under the MIT License. You only pay the providers whose models you connect." },
-  { match: /download|install|windows|mac|linux|try/i, text: "You can have this running on your own machine in a few minutes. The download button is further down this page." },
-  { match: /routine|schedule|every|daily|weekday/i, text: "Done. I set that up as a routine. Each run starts fresh, leaves a receipt, and I only message you if I need you." },
-  { match: /hello|hi\b|hey|who are you/i, text: "Hi. I am a folk: an AI teammate with a role, notes it keeps, and a computer to work on. Give me a task and I will report back when it is done." },
-];
-
-const FALLBACK =
-  "Understood. In the real app I would start now, keep working while you do something else, and come back when I need your approval.";
-
-export function replyFor(input: string): string {
-  return REPLIES.find((r) => r.match.test(input))?.text ?? FALLBACK;
+interface Persona {
+  replies: Reply[];
+  fallback: string;
+  suggestions: string[];
 }
 
-export const SUGGESTIONS = [
-  "Clear my inbox every weekday",
-  "Fix the flaky checkout test",
-  "Research three competitors",
-];
+const PERSONAS: Partial<Record<FolkId, Persona>> = {
+  assistant: {
+    replies: [
+      { match: /gym|workout|fitness|train|exercise/i, text: "That belongs to @Coach. I will pass it on with what you told me and bring back the plan." },
+      { match: /eye|screen|sleep|health/i, text: "That is @Vision's area. I will ask for a routine and keep it in your Desk." },
+      { match: /inbox|email|mail/i, text: "@Inbox handles that. I will have it triage your mail and park anything that needs you." },
+      { match: /bug|test|fix|code|deploy|pr\b/i, text: "I will hand it to @Dev Crew: reproduce, fix, review, and a pull request for you." },
+      { match: /price|cost|free|pay|licen/i, text: "OpenFolks is free under the MIT License. You only pay the providers whose models you connect." },
+      { match: /download|install|windows|mac|linux|try/i, text: "You can have this on your own machine in a few minutes. The download button is further down this page." },
+      { match: /hello|hi\b|hey|who are you/i, text: "Hi. I am the Assistant, the leader of your team. Tell me what you need and I will pick the right folk or create one." },
+    ],
+    fallback: "Got it. I would decide which folk should take that, brief them, and report back when it is done.",
+    suggestions: ["Add a folk for my finances", "Who handles my email?", "Is OpenFolks free?"],
+  },
+  vision: {
+    replies: [
+      { match: /remind|routine|break|every|daily|weekday/i, text: "Added to the routine. I will prompt you at the same times each weekday and keep a receipt of each run." },
+      { match: /sleep|bed|night|tired/i, text: "Dim screens an hour before bed, keep the same wake time, and avoid scrolling in the dark. General guidance, not medical advice." },
+      { match: /dry|strain|head|sore|blur/i, text: "That sounds like eye strain. Try the 20-20-20 rule, blink fully, and check your screen height. If it persists, see an optometrist." },
+      { match: /screen|monitor|laptop|light|brightness/i, text: "Put the top of the screen at eye level, about an arm away, and match brightness to the room." },
+    ],
+    fallback: "I only cover eye care and daily health habits. Tell me about your screen time or sleep and I will adjust your routine.",
+    suggestions: ["My eyes feel dry by evening", "Add a lunchtime walk", "How should I set up my monitor?"],
+  },
+  inbox: {
+    replies: [
+      { match: /every|daily|weekday|morning|routine/i, text: "Set as a routine. Every weekday morning I triage, reply to the routine mail and park the rest for you." },
+      { match: /newsletter|promo|spam|unsubscribe/i, text: "I will filter those into a digest and unsubscribe from the ones you never open, after you approve the list." },
+      { match: /urgent|important|boss|manager|client|vip/i, text: "I will flag those first and never auto-reply to them. They go to the top of your Desk for you." },
+      { match: /reply|draft|write/i, text: "I draft in your voice and hold anything sensitive for your approval before it goes out." },
+    ],
+    fallback: "I handle email: triage, drafts and parking. Point me at a sender or a rule and I will apply it.",
+    suggestions: ["Never auto-reply to my manager", "Digest my newsletters", "Clear my inbox every weekday"],
+  },
+  dev: {
+    replies: [
+      { match: /flaky|test|fail|ci/i, text: "I will rerun it in a loop to reproduce, find the race, fix it, and run the checks before opening a pull request." },
+      { match: /deploy|release|ship/i, text: "I will build, run the checks, and prepare the release notes. Deploying waits for your approval." },
+      { match: /review|pr\b|pull/i, text: "I will review the diff, flag risks and missing tests, and leave comments on the pull request." },
+      { match: /bug|error|crash|fix/i, text: "Send me the error or steps. I will reproduce it first, then make a focused fix." },
+    ],
+    fallback: "I work on code: bugs, tests, reviews and pull requests. Give me a repo and a problem.",
+    suggestions: ["Fix the flaky checkout test", "Review my open pull request", "Prepare release notes"],
+  },
+};
+
+const FALLBACK_PERSONA: Persona = {
+  replies: [],
+  fallback: "Understood. In the real app I would start now and come back when I need your approval.",
+  suggestions: [],
+};
+
+const persona = (id: FolkId): Persona => PERSONAS[id] ?? FALLBACK_PERSONA;
+
+export function replyFor(id: FolkId, input: string): string {
+  const p = persona(id);
+  return p.replies.find((r) => r.match.test(input))?.text ?? p.fallback;
+}
+
+export const suggestionsFor = (id: FolkId): string[] => persona(id).suggestions;

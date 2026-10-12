@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { FOLKS, type FolkId } from '@/lib/folks';
-import { SUGGESTIONS, THREADS, replyFor, type Msg } from '@/lib/demo-script';
+import { THREADS, replyFor, suggestionsFor, type Msg } from '@/lib/demo-script';
 import { FolkAvatar } from './FolkAvatar';
 import { PROVIDERS } from '@/lib/providers';
 import { ClaudeMark, CodexMark, LmStudioMark, OllamaMark, OpenRouterMark } from './ProviderMarks';
@@ -57,7 +57,12 @@ function withMentions(text: string) {
 
 function MsgView({ m }: { m: Msg }) {
   if (m.kind === 'text') {
-    return <div className={`bubble ${m.from}`}>{withMentions(m.text)}</div>;
+    return (
+      <div className={`bubble ${m.from}`}>
+        {m.name && <small className="who">{m.name}</small>}
+        {withMentions(m.text)}
+      </div>
+    );
   }
   if (m.kind === 'worked') {
     return (
@@ -268,7 +273,7 @@ export function DeskDemo() {
 
   const send = async (text: string) => {
     const value = text.trim();
-    if (!value || busy === active) return;
+    if (!value || busy === active || active === 'coach') return;
     const id = active;
     setDraft('');
     played.current.add(id);
@@ -278,11 +283,13 @@ export function DeskDemo() {
     await sleep(reduceMotion() ? 0 : 1100);
     setTyping(null);
     if (!alive.current) return;
-    push(id, { kind: 'text', from: 'folk', text: replyFor(value) });
+    push(id, { kind: 'text', from: 'folk', text: replyFor(id, value) });
     setBusy(null);
   };
 
   const folk = FOLKS[active];
+  const pairChat = active === 'coach';
+  const title = pairChat ? 'Assistant ⇄ Coach' : folk.name;
   const messages = shown[active];
   const row = (id: FolkId, opts: { big?: boolean; star?: boolean } = {}) => {
     const f = FOLKS[id];
@@ -339,8 +346,8 @@ export function DeskDemo() {
         <section className="desk-chat" aria-label={`Conversation with ${folk.name}`}>
           <header className="chat-head">
             <FolkAvatar type={folk.type} color={folk.color} size={34} working={busy === active} label={folk.name} />
-            <b>{folk.name}</b>
-            <span className="pill2"><Icon name="plus" size={13} /> Task</span>
+            <b>{title}</b>
+            {!pairChat && <span className="pill2"><Icon name="plus" size={13} /> Task</span>}
             {active === 'assistant' && <span className="pill2 leader"><Icon name="star" size={13} /> Leader</span>}
             <span className="grow" />
             <div className="model-wrap" ref={modelRef}>
@@ -399,15 +406,15 @@ export function DeskDemo() {
             )}
           </div>
           <div className="suggest">
-            {SUGGESTIONS.map((s) => (
+            {suggestionsFor(active).map((s) => (
               <button key={s} onClick={() => void send(s)} disabled={busy === active}>{s}</button>
             ))}
           </div>
           <form className="composer" onSubmit={(e) => { e.preventDefault(); void send(draft); }}>
             <Icon name="clip" />
             <span className="auto"><Icon name="bolt" size={15} /> Auto</span>
-            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={`Brief ${folk.name}`} aria-label={`Message ${folk.name}`} />
-            <button className="send" type="submit" aria-label="Send" disabled={!draft.trim() || busy === active}><Icon name="up" size={16} /></button>
+            <input value={draft} onChange={(e) => setDraft(e.target.value)} placeholder={pairChat ? 'Folks talk here. Open Assistant to step in.' : `Brief ${folk.name}`} disabled={pairChat} aria-label={`Message ${folk.name}`} />
+            <button className="send" type="submit" aria-label="Send" disabled={!draft.trim() || busy === active || pairChat}><Icon name="up" size={16} /></button>
           </form>
         </section>
         {panel && (

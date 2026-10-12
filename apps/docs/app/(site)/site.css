@@ -433,3 +433,5 @@ html:has(.site)::-webkit-scrollbar, .site *::-webkit-scrollbar { display: none; 
 .site .mp-pane li button:hover, .site .mp-pane li button.on { background: #1d1d22; }
 .site .mp-pane em { font-style: normal; font-size: .68rem; color: var(--ink); background: #09090b; border-radius: 5px; padding: 2px 8px; flex: none; }
 .site .mp-pane small { margin-top: auto; padding-top: 12px; color: #6f6f7a; font-size: .72rem; }
+.site .bubble .who { display: block; font-size: .72rem; font-weight: 600; letter-spacing: .02em; color: var(--ink2); margin-bottom: 2px; }
+.site .bubble.peer { align-self: flex-end; background: #26262e; white-space: normal; }
