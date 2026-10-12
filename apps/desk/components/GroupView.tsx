@@ -19,7 +19,6 @@ import { BotAvatar, MausAvatar } from "./Avatar";
 import { TurnPresence } from "./TurnPresence";
 import { showToolCallsEnabled } from "@/lib/feature-flags";
 import { groupAcceptsUserMessages } from "@/lib/folk-chat";
-import { avatarSeedFor } from "../../../shared/pebble-avatars";
 import { effectiveDefaultResponder, groupResponseHint } from "@/lib/group-routing";
 import { ChatMarkdown } from "./ChatMarkdown";
 import { Composer } from "./Composer";
@@ -86,11 +85,11 @@ function RoomToolChip({ message }: { message: Message }) {
 function ClusterLabel({ bot, name }: { bot?: Bot; name: string; color: string }) {
   return (
     <div className="mt-1 flex items-center gap-1.5 pl-0.5">
-      <MausAvatar
-        seed={bot ? avatarSeedFor(bot) : name}
-        size={16}
-        animated={false}
-      />
+      {bot ? (
+        <BotAvatar bot={bot} size={16} animated={false} />
+      ) : (
+        <MausAvatar seed={name} size={16} animated={false} />
+      )}
       <span className="text-[11px] font-medium text-ink-secondary">{name}</span>
     </div>
   );
@@ -1142,11 +1141,11 @@ export function GroupView({ group }: { group: Group }) {
           {(speaker || presenceVisible) && (
             <TurnPresence
               avatar={
-                <MausAvatar
-                  seed={presenceSpeaker ? avatarSeedFor(presenceSpeaker) : "folk"}
-                  size={36}
-                  animated={toolInFlight}
-                />
+                presenceSpeaker ? (
+                  <BotAvatar bot={presenceSpeaker} size={36} animated={toolInFlight} trackPointer={false} />
+                ) : (
+                  <MausAvatar seed="folk" size={36} animated={toolInFlight} />
+                )
               }
               visible={presenceVisible}
               label={activityLabel}
