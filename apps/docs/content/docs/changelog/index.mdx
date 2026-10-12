@@ -1,64 +1,50 @@
 ---
 title: Changelog
-description: Highlights from published OpenFolks desktop builds.
+description: What changed in each published OpenFolks release.
 icon: Clock
 ---
 
-This page tracks published desktop builds. Changes on `main` after a release are not listed as shipped until a new build is out.
+This page lists published releases of the OpenFolks desktop app. Changes on `main` that have not been released are not listed.
 
-## 0.1.32 — August 23, 2026
+## 1.0.4 — October 12, 2026
 
-- OpenCode now reads the installed CLI's live Zen, Go, third-party, and local provider inventory instead of a Go-only catalog.
-- Existing OpenCode logins and anonymous free models work without duplicate setup.
+- Folks keep their own colour and shape in team rooms. The "Thinking" indicator, the small avatar beside each sender's name, and the "Messaged" chips used a default mascot before, so a blue folk could appear green.
 
-[Full 0.1.32 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.32)
+[Release notes](https://github.com/manasdutta04/openfolks/releases/tag/v1.0.4)
 
-## 0.1.29 — August 23, 2026
+## 1.0.3 — October 12, 2026
 
-- Stopped OpenCode Go's live cloud models from appearing as local models and skipping sign-in.
-- Added direct latest-build downloads for Apple silicon, Intel Mac, Windows, and Ubuntu.
+- Conversations between two folks are now read-only for you. The server refuses messages and reactions in them, and the message box is replaced by a note with buttons that open each folk's own chat.
+- Folk-to-folk conversations no longer have an entry in the sidebar. Open one from the "Messaged" chip in a folk's chat, or from the Desk map.
 
-[Full 0.1.29 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.29)
+[Release notes](https://github.com/manasdutta04/openfolks/releases/tag/v1.0.3)
 
-## 0.1.27 — August 20, 2026
+## 1.0.2 — October 10, 2026
 
-- Added the Cursor Agent CLI engine with ACP model discovery.
-- Added pasted screenshot attachments and labeled sidebar sections.
-- Repaired the macOS update restart path and made browser join links resilient to popup blocking.
-- Added approval audit records, credential hardening, pinned messages, more reactions, room timeouts, and temporary computer takeover.
-- Licensed the project under MIT.
+- Fixed the Windows taskbar showing a blank window icon instead of the OpenFolks icon.
 
-[Full 0.1.27 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.27)
+[Release notes](https://github.com/manasdutta04/openfolks/releases/tag/v1.0.2)
 
-## 0.1.25 — August 20, 2026
+## 1.0.1 — October 10, 2026
 
-- Signed and notarized Intel macOS build.
-- First Ubuntu 24.04 x64 `.deb` and AppImage beta packages.
-- Four themes, spoiler text, safer additive team import, and several approval and model-routing fixes.
+- The Windows icon file now ships next to the app instead of inside the app bundle, so Windows can read it.
+- Installer build checks now fail if the icon is missing.
 
-[Full 0.1.25 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.25)
+[Release notes](https://github.com/manasdutta04/openfolks/releases/tag/v1.0.1)
 
-## 0.1.24 — August 19, 2026
+## 1.0.0 — October 10, 2026
 
-- Readable folk memory, working folders, cost tracking, message search, and a raw event inspector.
-- Bring-your-own VPS computers and major harness reliability fixes.
+The first public release of OpenFolks.
 
-[Full 0.1.24 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.24)
+- Create folks, each with its own model, instructions, working folder, memory, tools and computer.
+- Tasks, rooms and handoffs between folks, with approval cards for risky actions and a Backstage view of each turn.
+- Computers: this computer (opt-in), an isolated Local VM, hosted cloud computers, or your own server.
+- Routines and webhooks, connected apps, and ready-made crews from the Marketplace.
+- Installers for Windows 10 and 11 (x64), macOS (Apple silicon and Intel) and Ubuntu 24.04 (x64, `.deb` and AppImage). The installers are not signed with an Apple or Microsoft certificate; each release publishes `SHA256SUMS.txt`.
+- Released under the MIT License.
 
-## 0.1.23 — August 17, 2026
-
-- Fixed the Composio OAuth completion flow.
-- Clearer updater states, a new app icon, and correct delegated-turn terminal status.
-
-[Full 0.1.23 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.23)
-
-## 0.1.22 — August 17, 2026
-
-- One validated Composio project key instead of a two-key connector setup.
-- Connector lifecycle moved to Composio Sessions with real grant revocation on disconnect.
-
-[Full 0.1.22 notes](http://github.com/manasdutta04/openfolks/releases/tag/v0.1.22)
+[Release notes](https://github.com/manasdutta04/openfolks/releases/tag/v1.0.0)
 
 <Callout type="info" title="Every release stays available">
-  Browse checksums, installers, and older notes in the [OpenFolks releases repository](http://github.com/manasdutta04/openfolks/releases).
+  Installers, checksums and older notes are on the [OpenFolks releases page](https://github.com/manasdutta04/openfolks/releases).
 </Callout>

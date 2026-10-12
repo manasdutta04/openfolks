@@ -427,10 +427,21 @@ async function readVerifiedArchive({
   timeout.unref?.();
   let bytes;
   try {
-    const response = await fetchImpl(LINUX_CUA_RELEASE.url, {
-      headers: { "user-agent": "OpenFolks-packager" },
-      signal: controller.signal,
-    });
+    // GitHub's release CDN answers 5xx now and then; a short retry keeps a
+    // pinned, checksum-verified download from failing a whole release.
+    let response;
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      response = await fetchImpl(LINUX_CUA_RELEASE.url, {
+        headers: { "user-agent": "OpenFolks-packager" },
+        signal: controller.signal,
+      });
+      const transient = !response?.ok && (response?.status >= 500 || response?.status === 429);
+      if (!transient || attempt === 3) break;
+      try {
+        await response.body?.cancel?.();
+      } catch {}
+      await new Promise((resolve) => setTimeout(resolve, attempt * 3000));
+    }
     if (!response?.ok) {
       throw new Error(`CUA Driver download failed: HTTP ${response?.status ?? "unknown"}`);
     }

@@ -8,6 +8,7 @@ import { Mascot } from '@/components/site/Mascot';
 import { OsButton } from '@/components/site/OsButton';
 import { Reveal } from '@/components/site/Reveal';
 import { loadCrews } from '@/lib/crews';
+import { appVersion } from '@/lib/version';
 import { REPO, RELEASES } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -28,11 +29,12 @@ const FAQ = [
 
 export default function HomePage() {
   const crews = loadCrews();
+  const version = appVersion();
   return (
     <>
       <section className="hero">
         <Link className="pill" href="/changelog">
-          <i className="dot" /> Version 1.0 is out <span>Read the changelog</span>
+          <i className="dot" /> {version ? `Version ${version}` : 'New release'} is out <span>Read the changelog</span>
         </Link>
         <h1>
           Meet <Mascot size={92} label="OpenFolks mascot" /> OpenFolks

@@ -53,7 +53,13 @@ async function officialBinary() {
   await mkdir(cache, { recursive: true });
   const url = `https://github.com/trycua/cua/releases/download/cua-driver-rs-v${release.version}/${release.file}`;
   console.log(`Downloading CUA Driver ${release.version} from the official release…`);
-  const response = await fetch(url, { headers: { "user-agent": "OpenFolks-packager" } });
+  // The release CDN answers 5xx now and then; retry briefly before failing.
+  let response;
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    response = await fetch(url, { headers: { "user-agent": "OpenFolks-packager" } });
+    if (response.ok || (response.status < 500 && response.status !== 429) || attempt === 3) break;
+    await new Promise((resolve) => setTimeout(resolve, attempt * 3000));
+  }
   if (!response.ok) throw new Error(`CUA Driver download failed: HTTP ${response.status}`);
   const bytes = Buffer.from(await response.arrayBuffer());
   const digest = createHash("sha256").update(bytes).digest("hex");
