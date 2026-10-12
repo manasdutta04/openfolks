@@ -44,6 +44,12 @@ Data is stored in `~/.openfolks`. Set `OPENFOLKS_DATA_DIR` to use another locati
 
 Installers are published on the [latest release](https://github.com/manasdutta04/openfolks/releases/latest).
 
+[![Download for Windows](https://img.shields.io/badge/Windows-Download-0078D4?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe)
+[![Download for macOS (Apple silicon)](https://img.shields.io/badge/macOS-Apple%20silicon-000000?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.dmg)
+[![Download for macOS (Intel)](https://img.shields.io/badge/macOS-Intel-555555?style=for-the-badge&logo=apple&logoColor=white)](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-intel.dmg)
+[![Download for Linux (.deb)](https://img.shields.io/badge/Linux-.deb-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-amd64.deb)
+[![Download for Linux (AppImage)](https://img.shields.io/badge/Linux-AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks.AppImage)
+
 | System | File |
 |---|---|
 | Windows 10 and 11 (x64) | [OpenFolks-setup.exe](https://github.com/manasdutta04/openfolks/releases/latest/download/OpenFolks-setup.exe) |
