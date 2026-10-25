@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 import { CopyCode } from '@/components/site/CopyCode';
 import { CrewTabs } from '@/components/site/CrewTabs';
 import { DeskDemo } from '@/components/site/DeskDemo';
@@ -32,6 +33,7 @@ export default function HomePage() {
   const version = appVersion();
   return (
     <>
+      <Script src="https://sponsoranysite.com/embed.js" data-site="Eu1fMcBFpUOH" strategy="afterInteractive" />
       <section className="hero">
         <Link className="pill" href="/changelog">
           <i className="dot" /> {version ? `Version ${version}` : 'New release'} is out <span>Read the changelog</span>

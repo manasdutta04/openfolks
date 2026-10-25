@@ -5,14 +5,17 @@ const isProd = process.env.NODE_ENV === 'production';
 
 // Inline scripts and styles are required by Next's hydration payload and by
 // the docs theme, so those two directives keep 'unsafe-inline'. Everything
-// else is restricted to this origin. Dev mode also needs eval for refresh.
+// else is restricted to this origin, plus the sponsor embed on the landing
+// page. Dev mode also needs eval for refresh.
+const SPONSOR = 'https://sponsoranysite.com';
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isProd ? '' : " 'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline' ${SPONSOR}${isProd ? '' : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://opengraph.githubassets.com",
+  `img-src 'self' data: blob: https://opengraph.githubassets.com ${SPONSOR}`,
   "font-src 'self' data:",
-  `connect-src 'self'${isProd ? '' : ' ws: wss:'}`,
+  `connect-src 'self' ${SPONSOR}${isProd ? '' : ' ws: wss:'}`,
+  `frame-src ${SPONSOR}`,
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
